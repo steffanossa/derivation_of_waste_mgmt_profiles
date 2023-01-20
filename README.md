@@ -196,6 +196,12 @@ wm_df_pca %>% factoextra::fviz_eig(ncp = 15,
                                    addlabels = T)
 ```
 
+<p align = "center">
+  <picture>
+    <img src="img/pca_expl_var.svg">
+  </picture>
+</p>
+
 The *elbow method* would suggest using three PCs. The cumulative variance of 49.942 % when taking only three is too little to result in useful outcomes.
 
 Another method of evaluating the number of PCs to keep is the *Kaiser Criterion* which states that factors with an eigenvalue above 1 are considered important and should be retained. An eigenvalue above 1 means its factor explains more variance than a single variable would.
