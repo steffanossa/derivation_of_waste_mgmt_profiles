@@ -133,7 +133,7 @@ cols_to_exclude <- c("ID", "Gemeinde", "Strassen", "Region", "Provinz")
 A vector containing the names of the columns mentioned is created.
 A recipe from the *tidyverse* is used to remove these dimensions, replace missing values via bag imputation and replace outliers in numeric dimension with the IQR limits of their individual column and replace the remaining nominal columns with dummy variables.
 
-Note: *step_impute_constant()* and *step_outliers_iqr_to_limits()* are function from the *steffanossaR* package found at https://github.com/steffanossa/steffanossaR.
+Note: *step_impute_constant()* and *step_outliers_iqr_to_limits()* are functions from the *steffanossaR* package found at https://github.com/steffanossa/steffanossaR.
 
 ```{r}
 recipe_prep <- recipe(~., data = wm_df) %>% 
