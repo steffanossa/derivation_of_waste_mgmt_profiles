@@ -73,7 +73,11 @@ wm_df %>%
   ggplot(aes(y=Abfaelle_gesamt)) +
   geom_point(aes(x=Bevoelkerung, colour = Urbanisierungsgrad))
 ```
-
+<p align = "center">
+  <picture>
+    <img src="img/point_waste_pop_urb.svg">
+  </picture>
+</p>
 
 ```{r}
 wm_df %>% na.omit %>% 
@@ -86,6 +90,12 @@ wm_df %>% na.omit %>%
   theme(axis.title.x = element_blank(),
         axis.text.x = element_blank())
 ```
+<p align = "center">
+  <picture>
+    <img src="img/bar_mean_waste_urb.svg">
+  </picture>
+</p>
+
 
 Inspecting missing values within the waste sorting related columns:
 
