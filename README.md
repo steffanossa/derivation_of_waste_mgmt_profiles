@@ -222,7 +222,7 @@ wm_df %>% na.omit %>%
 ```
 <p align = "center">
   <picture>
-    <img src="img/bar_mean_waste_urb.svg">
+    <img src="img/mean_waste_urb.svg.svg">
   </picture>
 </p>
 
