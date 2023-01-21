@@ -184,7 +184,7 @@ wm_df %>% na.omit %>%
 ```
 <p align = "center">
   <picture>
-    <img src="img/box_waste_geol.svg">
+    <img src="img/box_waste_geo.svg">
   </picture>
 </p>
 
