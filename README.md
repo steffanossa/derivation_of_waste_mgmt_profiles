@@ -1,5 +1,15 @@
 # Derivation of Waste Management Profiles (*WIP*)
 
+## Context
+Although only about 15% of all waste within the EU is generated as municipal waste[^bignote], the absolute figures pose a major problem for municipalities, waste management companies and the environment. 225.7 million tonnes of municipal waste were collected in the EU in 2020, of which only 68 million tonnes were directly recycled, with the remainder going into long-term landfill or being incinerated for energy generation. In view of the climate-damaging landfill gases produced during storage or CO2 emissions during incineration, combined with the problem of the large amount of space required, the EU's goal is to constantly optimise its waste management. This is intended to promote the production of less waste, a stronger circular economy and the economic efficiency of waste management.
+In the context of this optimisation, we want to work out a status quo of municipal waste management in Italian municipalities, on which subsequent optimisation projects can build. For this purpose, we base our work on a data set on the waste management of a total of 4341 Italian municipalities. With the help of these data, we are to draw up profiles of the municipalities, which we can cluster them with regard to their descriptive characteristics, in particular the key figures of waste management, but also geographical and economic factors.
+
+
+[^bignote]: Municipal waste is all waste collected and treated by or for municipalities. It includes waste from households
+including bulky waste, similar waste from trade and commerce, office buildings, institutions and small businesses, as well as yard and garden waste, street sweepings and the contents of waste containers.
+yard and garden waste, street sweepings and the contents of waste containers. The definition includes waste from municipal
+sewage networks and their treatment as well as waste from construction and demolition work.
+
 ## Exploratory Data Analysis
 Get an overview of what the data set is about.
 ```{r}
@@ -156,10 +166,10 @@ wm_df_prepped <- recipe_prep %>% prep %>% bake(new_data = NULL)
 
 A PCA is used to reduce the number of variables by finding principal components of the data, which are new and uncorrelated variables that can explain the most variance in the original data.
 
-First, the Bartlett test is done.
-The Bartlett test verifies the null hypothesis that the correlation matrix is equal to the identity matrix, meaning that the variables of a given data set are uncorrelated. If the resulting value is below .05, the null hypothesis is rejected and it is concluded, that the variables are correlated.
+First, the *Bartlett Test* is done.
+The Bartlett test verifies the null hypothesis that the correlation matrix is equal to the identity matrix, meaning that the variables of a given data set are uncorrelated. If the resulting value is below .05, the null hypothesis is rejected and it is concluded, that the variables are correlated[^2].
 
-(Reference: https://www.itl.nist.gov/div898/handbook/eda/section3/eda357.htm)
+[^2]: Reference: https://www.itl.nist.gov/div898/handbook/eda/section3/eda357.htm
 
 ```{r}
 psych::cortest.bartlett(cor(wm_df_prepped), n = 100)
@@ -167,13 +177,13 @@ psych::cortest.bartlett(cor(wm_df_prepped), n = 100)
 
 The value is way below 0.05, there is correlation between the dimensions of the data set.
 
-Next, the Kaiser-Mayer-Olkin Criterion (KMO) is looked at.
+Next, the *Kaiser-Mayer-Olkin Criterion* (KMO) is looked at.
 The KMO measures the adequacy of a dataset for factor analysis.
 It ranges from 0 to 1, where a higher value indicates higher suitability.
 A value above .6 is generally considered to be the threshold.
-However, some sources also consider .5 to be acceptable.
+However, some sources also consider .5 to be acceptable[^3].
 
-(Reference: https://www.empirical-methods.hslu.ch/entscheidbaum/interdependenzanalyse/reduktion-der-variablen/faktoranalyse/)
+[^3]: Reference: https://www.empirical-methods.hslu.ch/entscheidbaum/interdependenzanalyse/reduktion-der-variablen/faktoranalyse/
 ```{r}
 psych::KMO(wm_df_prepped)$MSA
 ```
