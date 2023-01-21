@@ -132,13 +132,15 @@ Create some plots to enhance the understanding of the data set:
 ```r
 wm_df %>% na.omit %>% 
   ggplot(aes(x=Region, y=Abfaelle_gesamt)) +
+  ggtitle("Waste by Region") +
   geom_boxplot(aes(fill = Region), outlier.shape = 2,
                outlier.colour = "black",
                outlier.alpha = .5) +
   theme(aspect.ratio = 1) +
   theme(axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-        legend.position = "none")
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5))
 ```
 
 <p align = "center">
@@ -153,13 +155,15 @@ A lot of outliers in total amounts of waste per community. I am going to take ca
 ```r
 wm_df %>% na.omit %>% 
   ggplot(aes(x=Region, y=Abfaelle_gesamt)) +
+  ggtitle("Waste by Region") +
   geom_boxplot(aes(fill = Region), outlier.shape = NA) +
   theme(aspect.ratio = 1) +
   coord_flip() +
   coord_fixed(ylim = c(0, 29)) +
   theme(axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-        legend.position = "none")
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5))
 ```
 <p align = "center">
   <picture>
@@ -171,10 +175,12 @@ wm_df %>% na.omit %>%
 wm_df %>% na.omit %>% 
   mutate(Geologischer_Indikator = ifelse(Geologischer_Indikator == 1, "South", ifelse(Geologischer_Indikator == 2, "Middle", "North"))) %>% 
   ggplot(aes(x=Geologischer_Indikator, y=Abfaelle_gesamt)) +
+  ggtitle("Waste by geological location") +
   geom_boxplot(aes(fill = Geologischer_Indikator), outlier.shape = NA) +
   coord_cartesian(ylim = quantile(wm_df$Abfaelle_gesamt, c(0, 0.97))) +
   theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank())
+        axis.text.x = element_blank(),
+        plot.title = element_text(hjust = 0.5))
 ```
 <p align = "center">
   <picture>
@@ -191,7 +197,9 @@ wm_df %>%
                          "high")
   )) %>% 
   ggplot(aes(y=Abfaelle_gesamt)) +
-  geom_point(aes(x=Bevoelkerung, colour = Urbanisierungsgrad))
+  ggtitle("Waste by population & urbanisation degree") +
+  geom_point(aes(x=Bevoelkerung, colour = Urbanisierungsgrad)) +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 <p align = "center">
   <picture>
@@ -205,10 +213,12 @@ wm_df %>% na.omit %>%
                                      ifelse(Urbanisierungsgrad == 3, "Urbanization high",
                                             "Urbanization mid"))) %>% 
   ggplot(aes(x=Urbanisierungsgrad, y=Abfaelle_gesamt)) +
+  ggtitle("Mean waste by urbanisation degree") +
   stat_summary(aes(group = Urbanisierungsgrad, fill = Urbanisierungsgrad), fun = mean, geom = "bar") +
   labs(y = "mean(Abfaelle_gesamt)") +
   theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank())
+        axis.text.x = element_blank(),
+        plot.title = element_text(hjust = 0.5))
 ```
 <p align = "center">
   <picture>
