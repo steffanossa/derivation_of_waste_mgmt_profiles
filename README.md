@@ -10,6 +10,50 @@
 Although only about 15% of all waste within the EU is generated as municipal waste[^bignote], the absolute figures pose a major problem for municipalities, waste management companies and the environment. 225.7 million tonnes of municipal waste were collected in the EU in 2020, of which only 68 million tonnes were directly recycled, with the remainder going into long-term landfill or being incinerated for energy generation. In view of the climate-damaging landfill gases produced during storage or CO2 emissions during incineration, combined with the problem of the large amount of space required, the EU's goal is to constantly optimise its waste management. This is intended to promote the production of less waste, a stronger circular economy and the economic efficiency of waste management.
 In the context of this optimisation, we want to work out a status quo of municipal waste management in Italian municipalities, on which subsequent optimisation projects can build. For this purpose, we base our work on a data set on the waste management of a total of 4341 Italian municipalities. With the help of these data, we are to draw up profiles of the municipalities, which we can cluster them with regard to their descriptive characteristics, in particular the key figures of waste management, but also geographical and economic factors.
 
+<details>
+  <summary>(<i>click to show/hide the characteristics of the data set</i>)</summary>
+  <!-- have to be followed by an empty line! -->
+
+|	ID	|	Column name	|	Explanation	|
+|:---|:---|:---|
+|	1	|	ID	|	Unique identification number of the municipality.	|
+|	2	|	Region	|	Region in which the municipality is located.	|
+|	3	|	Provinz	|	Province in which the municipality is located.	|
+|	4	|	Gemeinde	|	Name of the municipality.	|
+|	5	|	Flaeche	|	Area of the municipality in km².	|
+|	6	|	Bevoelkerung	|	Population of the municipality.	|
+|	7	|	Bevoelkerungsdichte	|	Population of the municipality per km².	|
+|	8	|	Strassen	|	Total length of all roads in the municipality in km.	|
+|	9	|	Invelgemeinde	|	Indicator whether municipality is on an island (1 yes, 0 no).	|
+|	10	|	Kuestengemeinde	|	Indicator whether municipality is on the coast (1 yes, 0 no).	|
+|	11	|	Urbanisierungsgrad	|	Degree of municipality urbanisation (1 low, 3 high).	|
+|	12	|	Geologischer_Indikator  |	Geological location of the municipality (1 south, 2 central, 3 north).	|
+|	13	|	Abfaelle_gesamt	|	Total amount of municipal waste in kilotonnes (kt).	|
+|	14	|	Abfaelle_sortiert	|	Municipal waste sorted in kilotonnes (kt).	|
+|	15	|	Abfaelle_unsortiert	|	Unsorted municipal waste in kilotonnes (kt).	|
+|	16	|	Sortierungsgrad	|	Percentage of sorted municipal waste in total.	|
+|	17	|	Sort_Bio  | Proportion of organic waste among the sorted.	|
+|	18	|	Sort_Papier	|	Proportion of paper waste sorted.	|
+|	19	|	Sort_Glas	|	Percentage of glass waste sorted.	|
+|	20	|	Sort_Holz	|	Proportion of wood waste among those sorted.	|
+|	21	|	Sort_Metall	|	Proportion of metal waste among the sorted.	|
+|	22	|	Sort_Plastik	|	Proportion of plastic waste among the sorted.	|
+| 23  | Sort_Elektrik | Proportion of electrical waste among those sorted.  |
+| 24  | Sort__Textil |  Proportion of textile waste among those sorted. |
+| 25  | Sort_Rest | Proportion of residual waste among those sorted.  |
+| 26  | Verwendung_Energie |  Proportion of waste that is used for energy recovery. |
+| 27  | Verwendung_Deponie |  Proportion of waste that is landfilled. |
+| 28  | Verwendung_Recycling |  Proportion of waste that is recycled. |
+| 29  | Verwendung_Unbekannt |  Proportion of waste whose further use is unknown. |
+| 30  | Steuern_gewerblich |  Per capita Tax revenue from commercial sources. |
+| 31  | Steuern_privat |  Per capita tax revenue from private sources.  |
+| 32  | Kosten_Basis |  Per capita basic costs of waste management. |
+| 33  | Kosten_Sortierung | Per capita sorting costs of waste management companies. |
+| 34  | Kosten_sonstiges |  Per capita other costs of waste management.  |
+| 35  | Gebuehrenregelung | Waste fee regulation of the municipality. |
+| 36  | Region_PAYT | Indicator whether region offers PAYT (pay as you throw).  |
+</details>
+
 
 [^bignote]: Municipal waste is all waste collected and treated by or for municipalities. It includes waste from households
 including bulky waste, similar waste from trade and commerce, office buildings, institutions and small businesses, as well as yard and garden waste, street sweepings and the contents of waste containers.
@@ -17,7 +61,7 @@ yard and garden waste, street sweepings and the contents of waste containers. Th
 sewage networks and their treatment as well as waste from construction and demolition work.
 
 ## Exploratory Data Analysis
-Get an overview of what the data set is about.
+Get an overview of the data set.
 ```r
 wm_df <- load2("data/waste_management.RData")
 skimr::skim(wm_df)
@@ -959,7 +1003,7 @@ wm_df_transformed_pca %>%
 
 ```
 $hopkins_stat
-[1] 0.8191482
+[1] 0.778
 ```
 </details>
 
