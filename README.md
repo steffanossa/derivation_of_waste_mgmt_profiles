@@ -1003,7 +1003,10 @@ wm_df_transformed_pca %>%
 
 ```
 $hopkins_stat
-[1] 0.778
+[1] 0.7793498
+
+$plot
+NULL
 ```
 </details>
 
