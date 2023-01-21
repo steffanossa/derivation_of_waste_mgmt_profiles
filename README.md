@@ -1036,6 +1036,12 @@ clust_meth <- c("single", "complete", "average", "mcquitty", "median", "centroid
 
 The combination of *manhattan* and *ward.D2* looks most promising.
 
+<p align = "center">
+  <picture>
+    <img src="img/dendro_man_ward.svg">
+  </picture>
+</p>
+     
 ```r
 hclust_a <- 
   dist(scale(wm_df_transformed_pca), 
