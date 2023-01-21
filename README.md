@@ -6,6 +6,10 @@
 - [ ] profiling
 - [ ] output code
 
+```
+test
+```
+
 ## Context
 Although only about 15% of all waste within the EU is generated as municipal waste[^bignote], the absolute figures pose a major problem for municipalities, waste management companies and the environment. 225.7 million tonnes of municipal waste were collected in the EU in 2020, of which only 68 million tonnes were directly recycled, with the remainder going into long-term landfill or being incinerated for energy generation. In view of the climate-damaging landfill gases produced during storage or CO2 emissions during incineration, combined with the problem of the large amount of space required, the EU's goal is to constantly optimise its waste management. This is intended to promote the production of less waste, a stronger circular economy and the economic efficiency of waste management.
 In the context of this optimisation, we want to work out a status quo of municipal waste management in Italian municipalities, on which subsequent optimisation projects can build. For this purpose, we base our work on a data set on the waste management of a total of 4341 Italian municipalities. With the help of these data, we are to draw up profiles of the municipalities, which we can cluster them with regard to their descriptive characteristics, in particular the key figures of waste management, but also geographical and economic factors.
@@ -18,14 +22,14 @@ sewage networks and their treatment as well as waste from construction and demol
 
 ## Exploratory Data Analysis
 Get an overview of what the data set is about.
-```{r}
+```r
 wm_df <- load2("data/waste_management.RData")
 skimr::skim(wm_df)
 wm_df %>% complete.cases() %>% sum()
 ```
 There are quite a lot of missing values. Omitting all of them would mean a loss of more than 50 % of the data.
 Create some plots to enhance the understanding of the data set:
-```{r}
+```r
 wm_df %>% na.omit %>% 
   ggplot(aes(x=Region, y=Abfaelle_gesamt)) +
   geom_boxplot(aes(fill = Region), outlier.shape = 2,
@@ -46,7 +50,7 @@ wm_df %>% na.omit %>%
 
 A lot of outliers in total amounts of waste per community. I am going to take care of them later. Til then they will be hidden, so other values appear less compressed.
 
-```{r}
+```r
 wm_df %>% na.omit %>% 
   ggplot(aes(x=Region, y=Abfaelle_gesamt)) +
   geom_boxplot(aes(fill = Region), outlier.shape = NA) +
@@ -63,7 +67,7 @@ wm_df %>% na.omit %>%
   </picture>
 </p>
 
-```{r}
+```r
 wm_df %>% na.omit %>% 
   mutate(Geologischer_Indikator = ifelse(Geologischer_Indikator == 1, "South", ifelse(Geologischer_Indikator == 2, "Middle", "North"))) %>% 
   ggplot(aes(x=Geologischer_Indikator, y=Abfaelle_gesamt)) +
@@ -78,7 +82,7 @@ wm_df %>% na.omit %>%
   </picture>
 </p>
 
-```{r}
+```r
 wm_df %>%
   na.omit %>%
   mutate(Urbanisierungsgrad =
@@ -95,7 +99,7 @@ wm_df %>%
   </picture>
 </p>
 
-```{r}
+```r
 wm_df %>% na.omit %>% 
   mutate(Urbanisierungsgrad = ifelse(Urbanisierungsgrad == 1, "Urbanization low",
                                      ifelse(Urbanisierungsgrad == 3, "Urbanization high",
@@ -115,14 +119,14 @@ wm_df %>% na.omit %>%
 
 Inspecting missing values within the waste sorting related columns:
 
-```{r}
+```r
 sapply(wm_df[,16:25],
        function(y) sum(length(which(is.na(y))))) %>%
   tibble(Column = names(.),
          NA_Count = .)
 ```
 
-```{r}
+```r
 Sort_NAs <- c()
 for (i in 17:25) {
   nas_t <- which(is.na(wm_df[i]))
@@ -142,7 +146,7 @@ the value in Sortierungsgrad. Imputing any values here would completely destroy 
 
 Within the data set there are dimensions that hold no value when it comes to any analyses. "ID" is a unique identifier, "Gemeinde" the name of a community, "Strassen" contains more than 10 % missing values, "Region" and "Provinz" contain too many unique values that would complicate the process a lot. Also the importance of the information they hold is questionable.
 
-```{r}
+```r
 cols_to_exclude <- c("ID", "Gemeinde", "Strassen", "Region", "Provinz")
 ```
 
@@ -151,7 +155,7 @@ A recipe from the *tidyverse* is used to remove these dimensions, replace missin
 
 Note: *step_impute_constant()* and *step_outliers_iqr_to_limits()* are functions from the *steffanossaR* package found at https://github.com/steffanossa/steffanossaR.
 
-```{r}
+```r
 recipe_prep <- recipe(~., data = wm_df) %>% 
   step_rm(all_of(cols_to_exclude)) %>% 
   step_impute_constant(contains("Sort_"), constant = 0) %>% 
@@ -162,7 +166,7 @@ recipe_prep <- recipe(~., data = wm_df) %>%
   step_dummy(all_nominal()) %>% 
   step_zv(everything())
 ```
-```{r}
+```r
 #| include: false
 set.seed(187)
 wm_df_prepped <- recipe_prep %>% prep %>% bake(new_data = NULL)
@@ -177,7 +181,7 @@ The Bartlett test verifies the null hypothesis that the correlation matrix is eq
 
 [^2]: Reference: https://www.itl.nist.gov/div898/handbook/eda/section3/eda357.htm
 
-```{r}
+```r
 psych::cortest.bartlett(cor(wm_df_prepped), n = 100)
 ```
 
@@ -190,14 +194,14 @@ A value above .6 is generally considered to be the threshold.
 However, some sources also consider .5 to be acceptable[^3].
 
 [^3]: Reference: https://www.empirical-methods.hslu.ch/entscheidbaum/interdependenzanalyse/reduktion-der-variablen/faktoranalyse/
-```{r}
+```r
 psych::KMO(wm_df_prepped)$MSA
 ```
 
 0.559 is not very good but I will consider this acceptable.
 Now the PCA can be executed.
 
-```{r}
+```r
 wm_df_pca <- 
   wm_df_prepped %>% 
   prcomp(scale. = T,
@@ -207,7 +211,7 @@ wm_df_pca %>% summary()
 
 Taking a look at the first 15 principal components (PC) and the percentage of variance they explain.
 
-```{r}
+```r
 wm_df_pca %>% factoextra::fviz_eig(ncp = 15,
                                    addlabels = T)
 ```
@@ -222,7 +226,7 @@ The *elbow method* would suggest using three PCs. The cumulative variance of 49.
 
 Another method of evaluating the number of PCs to keep is the *Kaiser Criterion* which states that factors with an eigenvalue above 1 are considered important and should be retained. An eigenvalue above 1 means its factor explains more variance than a single variable would.
 
-```{r}
+```r
 factoextra::get_eig(wm_df_pca) %>%
   filter(eigenvalue > 1) %>%
   nrow()
@@ -232,7 +236,7 @@ factoextra::get_eig(wm_df_pca) %>%
 A third approach is *Horn's Method*.
 Here random data sets with equal size (columns and rows) as the original data set are generated and then a factor analysis is performed on each of them. The retained number of factors are then compared. The idea is that if the number of factors kept in the original data set is similar to the number of factors kept in the random sets, the factors of the original data set are considered not meaningful. If the number of factors of the original data set is larger than the number of factors in the random sets, the factors in the original data set are considered meaningful.
 
-```{r}
+```r
 wm_df_prepped %>% paran::paran()
 ```
 
@@ -240,7 +244,7 @@ wm_df_prepped %>% paran::paran()
 I chose to keep 7 with approximately 70 % cumulative variance.
 Next, we take a look at the contributions of the original variables to each new PC.
 
-```{r}
+```r
 n_PCs <- 7
 for (i in 1:n_PCs) {
   factoextra::fviz_contrib(wm_df_pca, "var", axes = i) %>% print
@@ -274,7 +278,7 @@ for (i in 1:n_PCs) {
 
 The *psych* package comes with a function that can illustrate the contribution of each original variable to the PCs in one plot.
 
-```{r}
+```r
 wm_df_prepped %>%
   psych::principal(nfactors = n_PCs) %>%
   psych::fa.diagram()
@@ -282,7 +286,7 @@ wm_df_prepped %>%
 
 A new data set is created based on the new dimensions.
 
-```{r}
+```r
 wm_df_transformed_pca <- as.data.frame(-wm_df_pca$x[,1:n_PCs])
 ```
 
@@ -293,7 +297,7 @@ The factors the FA puts out might be correlated, so a rotation can be used in ma
 
 First, a vector containing all rotation methods is created. Then we iterate over each of them using a for-loop.
 
-```{r}
+```r
 rot_meth <- c("varimax", "quartimax", "equamax", "oblimin", "oblimax", "promax")
 
 for (rm in rot_meth) {
@@ -314,7 +318,7 @@ for (rm in rot_meth) {
 
 To assess the clustering tendency of a data set the *Hopkins Statistic* can be used. It measures the probability that a given data set was generated by a uniform data distribution. The higher the resulting value the better the clustering tendency. Values range from 0 to 1.
 
-```{r}
+```r
 wm_df_transformed_pca %>%
   get_clust_tendency(n = nrow(wm_df_transformed_pca) - 1, graph = F)
 ```
@@ -327,7 +331,7 @@ Clustering can be done with different approaches.
 Agglomerative methods start with a cluster containing a single observation, adding more and more observations successively.
 First, a distance matrix and then clusters are created. For both steps there are multiple methods of creation.
 
-```{r}
+```r
 dist_meth <- c("euclidean", "maximum", "manhattan", "canberra", "minkowski")
 clust_meth <- c("single", "complete", "average", "mcquitty", "median", "centroid", "ward.D2")
 #' *...*
@@ -335,7 +339,7 @@ clust_meth <- c("single", "complete", "average", "mcquitty", "median", "centroid
 
 The combination of *manhattan* and *ward.D2* looks most promising.
 
-```{r}
+```r
 hclust_a <- 
   dist(scale(wm_df_transformed_pca), 
        method = "canberra") %>% 
