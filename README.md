@@ -338,7 +338,7 @@ ggdendrogram(hclust_a, leaf_labels = F, labels = F) +
   labs(title = paste0("Distance: Canberra", "\nCluster: ward.D2"))
 ```
 
-3 or maybe for clusters seem to be viable options.
+3 or maybe 4 clusters seem to be viable options.
 Microsoft Excel can be used to comfortably compare clusters for profiling and help determining the number of clusters to choose.
 
 *EXCEL SCREENSHOT OR STH*
