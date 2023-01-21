@@ -136,7 +136,7 @@ wm_df %>% na.omit %>%
   geom_boxplot(aes(fill = Region), outlier.shape = 2,
                outlier.colour = "black",
                outlier.alpha = .5) +
-  theme(aspect.ratio = 1) +
+  theme(aspect.ratio = 0.5) +
   theme(axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.position = "none",
@@ -157,7 +157,7 @@ wm_df %>% na.omit %>%
   ggplot(aes(x=Region, y=Abfaelle_gesamt)) +
   ggtitle("Waste by Region") +
   geom_boxplot(aes(fill = Region), outlier.shape = NA) +
-  theme(aspect.ratio = 1) +
+  theme(aspect.ratio = 0.5) +
   coord_flip() +
   coord_fixed(ylim = c(0, 29)) +
   theme(axis.title.x = element_blank(),
