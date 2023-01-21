@@ -1,0 +1,12 @@
+tidymodels
+paran
+psych
+FactoMineR
+crayon
+factoextra
+tidyclust
+GPArotation
+ggplot2
+skimr
+steffanossaR
+ggdendro
