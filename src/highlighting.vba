@@ -23,7 +23,7 @@ Sub Highlighting()
         group_end_row = i + cluster_count - 1
         
         ' loop through dimensions
-        For j = 2 To data_end_col
+        For j = 2 To data_end_col - 2
             Range(Cells(i, j), Cells(group_end_row, j)).Select
             
             ' add highlighting
