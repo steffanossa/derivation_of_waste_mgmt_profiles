@@ -283,14 +283,18 @@ wm_df[t,16:25]
 </details>
 
 Looks like the sum of the values present in these waste sorting columns equals
-the value in Sortierungsgrad. Imputing any values here would completely destroy the logic behind these columns. I would argue that dropping all these values is a viable option. However, one could also say that replacing these NAs with zeros instead might work out as well. The latter option is the one I chose.
+the value in *Sortierungsgrad*. Imputing any values here would completely destroy the logic behind these columns. I would argue that dropping all these values is a viable option. However, one could also say that replacing these NAs with zeros instead might work out as well. The latter option is the one I chose.
 
 ## Dimension Reduction
 
-Within the data set there are dimensions that hold no value when it comes to any analyses. "ID" is a unique identifier, "Gemeinde" the name of a community, "Strassen" contains more than 10 % missing values, "Region" and "Provinz" contain too many unique values that would complicate the process a lot. Also the importance of the information they hold is questionable.
+Within the data set there are dimensions that hold no value when it comes to any analyses. *ID* is a unique identifier, *Gemeinde* the name of a community, *Strassen* contains more than 10 % missing values, *Region* and *Provinz* contain too many unique values that would complicate the process a lot. Also the importance of the information they hold is questionable.
 
 ```r
-cols_to_exclude <- c("ID", "Gemeinde", "Strassen", "Region", "Provinz")
+cols_to_exclude <- c("ID",
+                     "Gemeinde",
+                     "Strassen",
+                     "Region",
+                     "Provinz")
 ```
 
 A vector containing the names of the columns mentioned is created.
@@ -309,10 +313,14 @@ recipe_prep <- recipe(~., data = wm_df) %>%
   step_dummy(all_nominal()) %>% 
   step_zv(everything())
 ```
+
 ```r
 #| include: false
 set.seed(187)
-wm_df_prepped <- recipe_prep %>% prep %>% bake(new_data = NULL)
+wm_df_prepped <-
+  recipe_prep %>%
+  prep %>%
+  bake(new_data = NULL)
 ```
 
 ### Principal Components Analysis (PCA)
@@ -353,11 +361,11 @@ psych::KMO(wm_df_prepped)$MSA
   <!-- have to be followed by an empty line! -->
 
 ```
-[1] 0.568148
+[1] 0.5681499
 ```
 </details>
 
-~0.57 is not very good but I will consider this acceptable.
+\~0.57 is not very good but I will consider this acceptable.
 Now the PCA can be executed.
 
 ```r
@@ -365,7 +373,8 @@ wm_df_pca <-
   wm_df_prepped %>% 
   prcomp(scale. = T,
          center = T)
-wm_df_pca %>% summary()
+wm_df_pca %>%
+  summary()
 ```
 <details>
   <summary>(<i>click to show/hide console output</i>)</summary>
@@ -395,8 +404,9 @@ Cumulative Proportion  0.99009 0.99494 0.99833 0.99929 0.99960 0.99985 1.00000
 Taking a look at the first 15 principal components (PC) and the percentage of variance they explain.
 
 ```r
-wm_df_pca %>% factoextra::fviz_eig(ncp = 15,
-                                   addlabels = T)
+wm_df_pca %>%
+factoextra::fviz_eig(ncp = 15,
+                     addlabels = T)
 ```
 
 <p align = "center">
@@ -419,23 +429,45 @@ factoextra::get_eig(wm_df_pca) %>%
 
 ```
       eigenvalue variance.percent cumulative.variance.percent
-Dim.1   6.605658        21.308573                    21.30857
-Dim.2   5.569971        17.967650                    39.27622
-Dim.3   2.538892         8.189973                    47.46620
-Dim.4   1.826722         5.892652                    53.35885
-Dim.5   1.584867         5.112473                    58.47132
-Dim.6   1.335573         4.308301                    62.77962
-Dim.7   1.077217         3.474892                    66.25451
-Dim.8   1.045812         3.373587                    69.62810
+Dim.1	  6.604434	      21.304627                    21.30463
+Dim.2   5.571090      	17.971259                    39.27589
+Dim.3	  2.533845	       8.173692	                   47.44958
+Dim.4 	1.824394      	 5.885141	                   53.33472
+Dim.5	  1.586462	       5.117619	                   58.45234
+Dim.6	  1.339441	       4.320776	                   62.77311
+Dim.7	  1.076469	       3.472482            	       66.24560
+Dim.8	  1.043998	       3.367737              	     69.61333
 ```
 </details>
 
-8 factors possess eigenvalues above 1 with a cumulative variance of 69.62810 %.
-
-A third approach is *Horn's Method*.
-Here random data sets with equal size (columns and rows) as the original data set are generated and then a factor analysis is performed on each of them. The retained number of factors are then compared. The idea is that if the number of factors kept in the original data set is similar to the number of factors kept in the random sets, the factors of the original data set are considered not meaningful. If the number of factors of the original data set is larger than the number of factors in the random sets, the factors in the original data set are considered meaningful.
+8 factors possess eigenvalues above 1 with a cumulative variance of \~69.61 %.
 
 ```r
+get_eig(wm_df_pca)[1:15,] %>% 
+  ggplot(aes(y=eigenvalue, x=1:15)) +
+  ggtitle("Eigenvalue by Component") +
+  labs(x = "Component",
+       y = "Eigenvalue") +
+  geom_line() +
+  geom_point(col = "blue") +
+  scale_x_continuous(breaks = 1:15) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+<p align = "center">
+  <picture>
+    <img src="img/eigen_by_component.svg">
+  </picture>
+</p>
+
+A third approach is *Horn's Method*.
+Here random data sets with equal size (columns and rows) as the original data set are generated and then a factor analysis is performed on each of them. The retained number of factors are then compared. The idea is that if the number of factors kept in the original data set is similar to the number of factors kept in the random sets, the factors of the original data set are considered not meaningful. If the number of factors of the original data set is larger than the number of factors in the random sets, the factors in the original data set are considered meaningful[^4].
+
+[^4]: Reference: doi:10.1007/bf02289447
+
+```r
+set.seed(187)
 wm_df_prepped %>%
      paran::paran()
 ```
@@ -451,13 +483,13 @@ Results of Horn's Parallel Analysis for component retention
 Component   Adjusted    Unadjusted    Estimated 
             Eigenvalue  Eigenvalue    Bias 
 -------------------------------------------------- 
-1           6.447652    6.605657      0.158005
-2           5.431207    5.569971      0.138764
-3           2.415137    2.538891      0.123754
-4           1.715986    1.826722      0.110735
-5           1.485571    1.584866      0.099294
-6           1.247027    1.335573      0.088545
--------------------------------------------------- 
+1           6.446948    6.604434      0.157485
+2           5.432912    5.571090      0.138178
+3           2.410785    2.533844      0.123058
+4           1.713787    1.824393      0.110606
+5           1.487574    1.586461      0.098887
+6           1.251387    1.339440      0.088052
+--------------------------------------------------
 
 Adjusted eigenvalues > 1 indicate dimensions to retain.
 (6 components retained)
@@ -471,7 +503,8 @@ Next, we take a look at the contributions of the original variables to each new 
 ```r
 n_PCs <- 8
 for (i in 1:n_PCs) {
-  factoextra::fviz_contrib(wm_df_pca, "var", axes = i) %>% print
+  factoextra::fviz_contrib(wm_df_pca, "var", axes = i)
+  %>% print
 }
 ```
 
@@ -593,9 +626,9 @@ Additionally, the loading are ambiguous. PCA will be used.
 
 ## Cluster Analysis
 
-To assess the clustering tendency of a data set the *Hopkins Statistic* can be used. It measures the probability that a given data set was generated by a uniform data distribution. The higher the resulting value the better the clustering tendency. Values range from 0 to 1[^4].
+To assess the clustering tendency of a data set the *Hopkins Statistic* can be used. It measures the probability that a given data set was generated by a uniform data distribution. The higher the resulting value the better the clustering tendency. Values range from 0 to 1[^5].
 
-[^4]: Reference: https://www.datanovia.com/en/lessons/assessing-clustering-tendency/
+[^5]: Reference: https://www.datanovia.com/en/lessons/assessing-clustering-tendency/
 
 ```r
 wm_df_transformed_pca %>%
@@ -614,7 +647,7 @@ NULL
 ```
 </details>
 
-~ 0.8309 is quite good.
+\~ 0.8309 is quite good.
 
 ### Hierarchical Clustering: Agglomerative Methods
 
@@ -623,8 +656,19 @@ Agglomerative methods start with a cluster containing a single observation, addi
 First, a distance matrix and then clusters are created. For both steps there are multiple methods of creation.
 
 ```r
-dist_meth <- c("euclidean", "maximum", "manhattan", "canberra", "minkowski")
-clust_meth <- c("single", "complete", "average", "mcquitty", "median", "centroid", "ward.D2")
+dist_meth <- c("euclidean",
+               "maximum",
+               "manhattan",
+               "canberra",
+               "minkowski")
+
+clust_meth <- c("single",
+                "complete",
+                "average",
+                "cquitty",
+                "median",
+                "centroid",
+                "ward.D2")
 #' *...*
 ```
 
@@ -647,6 +691,60 @@ ggdendrogram(hclust_a, leaf_labels = F, labels = F) +
      
 A number of 2 to 6 clusters seem to be most viable.
 Microsoft Excel can be used to comfortably compare clusters for profiling and help determining the number of clusters to choose.
+
+```r
+for (i in 2:7) {
+  wm_df_prepped_clust_a <-
+    wm_df_prepped %>%
+    mutate(Cluster_a = cutree(hclust_a, k = i))
+  
+  profiling_df <-
+    wm_df_prepped_clust_a %>% 
+    group_by(Cluster_a) %>% 
+    mutate(n_island_municipalities = sum(Inselgemeinde),
+           Inselgemeinde = NULL,
+           n_coastal_municipalities = sum(Kuestengemeinde),
+           Kuestengemeinde = NULL) %>% 
+    summarize_all(mean)
+  profiling_df$n_Cluster <- i
+  profiling_df$Size <- table(wm_df_prepped_clust_a$Cluster_a)
+  
+  if (i == 2) {
+    profiling_df_final <- profiling_df
+    # write to csv
+    write.table(profiling_df_final %>%
+                  filter(n_Cluster == i) %>% 
+                  mutate(round(., 2)),
+                file = "profiling_hclust_a.csv",
+                sep = ";",
+                dec = ",",
+                row.names = F)
+  } else {
+    profiling_df_final <-
+      profiling_df_final %>% 
+      rows_append(profiling_df)
+    
+    # append rows with leading blank line to csv
+    write.table("",
+                file = "profiling_hclust_a.csv",
+                sep = ";",
+                append = T,
+                col.names = F,
+                dec = ",",
+                row.names = F)
+    write.table(profiling_df_final %>%
+                  filter(n_Cluster == i) %>% 
+                  mutate(round(., 2)),
+                file = "profiling_hclust_a.csv",
+                sep = ";",
+                append = T,
+                col.names = F,
+                dec = ",",
+                row.names = F)
+  }
+}
+```
+
 Using a .vba script, the differences of the means of the different clusters can be emphasised easily. I use this macro for highlighting.
 
 <details>
