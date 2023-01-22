@@ -3,10 +3,17 @@ Derivation of Waste Management Profiles
 steffanossa
 last-modified
 
+## Todos:
+
+- [ ] references: \~bartlett test\~, <sub>kmo</sub>, pca, fa
+- [ ] clustering: diana, mona, agnes, k-means
+- [ ] profiling
+- [ ] output code
+
 ## Context
 
 Although only about 15% of all waste within the EU is generated as
-municipal waste\[^1\], the absolute figures pose a major problem for
+municipal waste[^1], the absolute figures pose a major problem for
 municipalities, waste management companies and the environment. 225.7
 million tonnes of municipal waste were collected in the EU in 2020, of
 which only 68 million tonnes were directly recycled, with the remainder
@@ -24,19 +31,11 @@ the waste management of a total of 4341 Italian municipalities. With the
 help of these data, we are to draw up profiles of the municipalities,
 which we can cluster them with regard to their descriptive
 characteristics, in particular the key figures of waste management, but
-also geographical and economic factors. \[^1\]: Municipal waste is all
-waste collected and treated by or for municipalities. It includes waste
-from households including bulky waste, similar waste from trade and
-commerce, office buildings, institutions and small businesses, as well
-as yard and garden waste, street sweepings and the contents of waste
-containers. yard and garden waste, street sweepings and the contents of
-waste containers. The definition includes waste from municipal sewage
-networks and their treatment as well as waste from construction and
-demolition work.
+also geographical and economic factors.
 
 ## Exploratory Data Analysis
 
-Get an overview of what the data set is about.
+Get an overview of the data set.
 
 ``` r
 wm_df <- load2("data/waste_management.RData")
@@ -107,7 +106,7 @@ Data summary
 wm_df %>% complete.cases() %>% sum()
 ```
 
-    ## [1] 2018
+    > [1] 2018
 
 There are quite a lot of missing values. Omitting all of them would mean
 a loss of more than 50 % of the data. Create some plots to enhance the
@@ -146,9 +145,6 @@ wm_df %>% na.omit %>%
         legend.position = "none",
         plot.title = element_text(hjust = 0.5))
 ```
-
-    ## Coordinate system already present. Adding new coordinate system, which will
-    ## replace the existing one.
 
 ![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
@@ -207,21 +203,22 @@ sapply(wm_df[,16:25],
          NA_Count = .)
 ```
 
-    ## # A tibble: 10 × 2
-    ##    Column          NA_Count
-    ##    <chr>              <int>
-    ##  1 Sortierungsgrad        0
-    ##  2 Sort_Bio             511
-    ##  3 Sort_Papier           25
-    ##  4 Sort_Glas             33
-    ##  5 Sort_Holz           1095
-    ##  6 Sort_Metall          246
-    ##  7 Sort_Plastik          39
-    ##  8 Sort_Elektrik        314
-    ##  9 Sort_Textil         1013
-    ## 10 Sort_Rest            136
+    > # A tibble: 10 × 2
+    >    Column          NA_Count
+    >    <chr>              <int>
+    >  1 Sortierungsgrad        0
+    >  2 Sort_Bio             511
+    >  3 Sort_Papier           25
+    >  4 Sort_Glas             33
+    >  5 Sort_Holz           1095
+    >  6 Sort_Metall          246
+    >  7 Sort_Plastik          39
+    >  8 Sort_Elektrik        314
+    >  9 Sort_Textil         1013
+    > 10 Sort_Rest            136
 
 ``` r
+options(width = 200)
 Sort_NAs <- c()
 for (i in 17:25) {
   nas_t <- which(is.na(wm_df[i]))
@@ -234,21 +231,15 @@ Sort_NAs_table[1:5] %>% names %>% as.numeric -> t
 wm_df[t,16:25]
 ```
 
-    ##      Sortierungsgrad Sort_Bio Sort_Papier Sort_Glas Sort_Holz Sort_Metall
-    ## 429             0.72       NA        0.72        NA        NA          NA
-    ## 3572            0.70       NA          NA        NA        NA          NA
-    ## 4175            0.00       NA          NA        NA        NA          NA
-    ## 3777           59.32       NA          NA     39.84        NA          NA
-    ## 4017            1.87       NA          NA        NA        NA          NA
-    ##      Sort_Plastik Sort_Elektrik Sort_Textil Sort_Rest
-    ## 429            NA            NA          NA        NA
-    ## 3572           NA           0.7          NA        NA
-    ## 4175           NA           0.0          NA        NA
-    ## 3777           NA            NA          NA     19.48
-    ## 4017         0.62            NA          NA      1.25
+    >      Sortierungsgrad Sort_Bio Sort_Papier Sort_Glas Sort_Holz Sort_Metall Sort_Plastik Sort_Elektrik Sort_Textil Sort_Rest
+    > 429             0.72       NA        0.72        NA        NA          NA           NA            NA          NA        NA
+    > 3572            0.70       NA          NA        NA        NA          NA           NA           0.7          NA        NA
+    > 4175            0.00       NA          NA        NA        NA          NA           NA           0.0          NA        NA
+    > 3777           59.32       NA          NA     39.84        NA          NA           NA            NA          NA     19.48
+    > 4017            1.87       NA          NA        NA        NA          NA         0.62            NA          NA      1.25
 
 Looks like the sum of the values present in these waste sorting columns
-equals the value in Sortierungsgrad. Imputing any values here would
+equals the value in *Sortierungsgrad*. Imputing any values here would
 completely destroy the logic behind these columns. I would argue that
 dropping all these values is a viable option. However, one could also
 say that replacing these NAs with zeros instead might work out as well.
@@ -257,9 +248,9 @@ The latter option is the one I chose.
 ## Dimension Reduction
 
 Within the data set there are dimensions that hold no value when it
-comes to any analyses. “ID” is a unique identifier, “Gemeinde” the name
-of a community, “Strassen” contains more than 10 % missing values,
-“Region” and “Provinz” contain too many unique values that would
+comes to any analyses. *ID* is a unique identifier, *Gemeinde* the name
+of a community, *Strassen* contains more than 10 % missing values,
+*Region* and *Provinz* contain too many unique values that would
 complicate the process a lot. Also the importance of the information
 they hold is questionable.
 
@@ -303,46 +294,41 @@ First, the Bartlett test is done. The Bartlett test verifies the null
 hypothesis that the correlation matrix is equal to the identity matrix,
 meaning that the variables of a given data set are uncorrelated. If the
 resulting value is below .05, the null hypothesis is rejected and it is
-concluded, that the variables are correlated.
-
-(Reference:
-<https://www.itl.nist.gov/div898/handbook/eda/section3/eda357.htm>)
+concluded, that the variables are correlated[^2].
 
 ``` r
 psych::cortest.bartlett(cor(wm_df_prepped), n = 100)
 ```
 
-    ## $chisq
-    ## [1] 2565.479
-    ## 
-    ## $p.value
-    ## [1] 1.252629e-286
-    ## 
-    ## $df
-    ## [1] 465
+    > $chisq
+    > [1] 2565.637
+    > 
+    > $p.value
+    > [1] 1.174216e-286
+    > 
+    > $df
+    > [1] 465
 
 The value is way below 0.05, there is correlation between the dimensions
 of the data set.
 
 Next, the Kaiser-Mayer-Olkin Criterion (KMO) is looked at. The KMO
-measures the adequacy of a dataset for factor analysis. It ranges from 0
-to 1, where a higher value indicates higher suitability. A value above
+measures the adequacy of a data set for factor analysis. It ranges from
+0 to 1, where a higher value indicates higher suitability. A value above
 .6 is generally considered to be the threshold. However, some sources
-also consider .5 to be acceptable.
-
-(Reference:
-<https://www.empirical-methods.hslu.ch/entscheidbaum/interdependenzanalyse/reduktion-der-variablen/faktoranalyse/>)
+also consider .5 to be acceptable[^3].
 
 ``` r
 psych::KMO(wm_df_prepped)$MSA
 ```
 
-    ## [1] 0.5685659
+    > [1] 0.568635
 
-\~0.57 is not very good but I will consider this acceptable. Now the PCA
-can be executed.
+0.568635 is not very good but I will consider this acceptable. Now the
+PCA can be executed.
 
 ``` r
+options(width = 90)
 wm_df_pca <- 
   wm_df_prepped %>% 
   prcomp(scale. = T,
@@ -351,27 +337,23 @@ wm_df_pca %>%
   summary()
 ```
 
-    ## Importance of components:
-    ##                           PC1    PC2     PC3     PC4    PC5     PC6     PC7
-    ## Standard deviation     2.5713 2.3624 1.59165 1.34938 1.2599 1.15557 1.03787
-    ## Proportion of Variance 0.2133 0.1800 0.08172 0.05874 0.0512 0.04308 0.03475
-    ## Cumulative Proportion  0.2133 0.3933 0.47503 0.53377 0.5850 0.62805 0.66279
-    ##                            PC8     PC9    PC10    PC11    PC12    PC13   PC14
-    ## Standard deviation     1.02086 0.96904 0.95477 0.91403 0.88153 0.85785 0.8029
-    ## Proportion of Variance 0.03362 0.03029 0.02941 0.02695 0.02507 0.02374 0.0208
-    ## Cumulative Proportion  0.69641 0.72670 0.75611 0.78306 0.80813 0.83187 0.8527
-    ##                           PC15    PC16    PC17    PC18    PC19   PC20    PC21
-    ## Standard deviation     0.79822 0.76400 0.74106 0.69018 0.64890 0.6099 0.55871
-    ## Proportion of Variance 0.02055 0.01883 0.01772 0.01537 0.01358 0.0120 0.01007
-    ## Cumulative Proportion  0.87322 0.89205 0.90976 0.92513 0.93871 0.9507 0.96078
-    ##                           PC22    PC23   PC24    PC25    PC26    PC27    PC28
-    ## Standard deviation     0.54514 0.47389 0.4522 0.43084 0.38348 0.32428 0.17289
-    ## Proportion of Variance 0.00959 0.00724 0.0066 0.00599 0.00474 0.00339 0.00096
-    ## Cumulative Proportion  0.97036 0.97761 0.9842 0.99019 0.99494 0.99833 0.99929
-    ##                           PC29    PC30    PC31
-    ## Standard deviation     0.09752 0.08771 0.06889
-    ## Proportion of Variance 0.00031 0.00025 0.00015
-    ## Cumulative Proportion  0.99960 0.99985 1.00000
+    > Importance of components:
+    >                           PC1    PC2     PC3     PC4     PC5     PC6     PC7     PC8
+    > Standard deviation     2.5707 2.3633 1.59185 1.34810 1.25994 1.15636 1.03757 1.02094
+    > Proportion of Variance 0.2132 0.1802 0.08174 0.05862 0.05121 0.04313 0.03473 0.03362
+    > Cumulative Proportion  0.2132 0.3933 0.47508 0.53371 0.58492 0.62805 0.66278 0.69640
+    >                            PC9    PC10    PC11    PC12    PC13    PC14    PC15    PC16
+    > Standard deviation     0.96907 0.95406 0.91403 0.88187 0.85728 0.80387 0.79875 0.76441
+    > Proportion of Variance 0.03029 0.02936 0.02695 0.02509 0.02371 0.02085 0.02058 0.01885
+    > Cumulative Proportion  0.72670 0.75606 0.78301 0.80809 0.83180 0.85265 0.87323 0.89208
+    >                           PC17    PC18    PC19    PC20    PC21    PC22    PC23   PC24
+    > Standard deviation     0.74096 0.69012 0.64915 0.60978 0.55875 0.54515 0.47377 0.4523
+    > Proportion of Variance 0.01771 0.01536 0.01359 0.01199 0.01007 0.00959 0.00724 0.0066
+    > Cumulative Proportion  0.90979 0.92515 0.93874 0.95074 0.96081 0.97040 0.97764 0.9842
+    >                           PC25    PC26    PC27    PC28    PC29    PC30    PC31
+    > Standard deviation     0.43012 0.38299 0.32422 0.17291 0.09760 0.08770 0.06890
+    > Proportion of Variance 0.00597 0.00473 0.00339 0.00096 0.00031 0.00025 0.00015
+    > Cumulative Proportion  0.99020 0.99494 0.99833 0.99929 0.99960 0.99985 1.00000
 
 Taking a look at the first 15 principal components (PC) and the
 percentage of variance they explain.
@@ -398,58 +380,75 @@ factoextra::get_eig(wm_df_pca) %>%
   filter(eigenvalue > 1)
 ```
 
-    ##       eigenvalue variance.percent cumulative.variance.percent
-    ## Dim.1   6.611644        21.327884                    21.32788
-    ## Dim.2   5.580969        18.003124                    39.33101
-    ## Dim.3   2.533352         8.172103                    47.50311
-    ## Dim.4   1.820828         5.873638                    53.37675
-    ## Dim.5   1.587278         5.120253                    58.49700
-    ## Dim.6   1.335336         4.307536                    62.80454
-    ## Dim.7   1.077166         3.474730                    66.27927
-    ## Dim.8   1.042163         3.361815                    69.64108
+    >       eigenvalue variance.percent cumulative.variance.percent
+    > Dim.1   6.608536        21.317857                    21.31786
+    > Dim.2   5.585121        18.016521                    39.33438
+    > Dim.3   2.533971         8.174099                    47.50848
+    > Dim.4   1.817373         5.862495                    53.37097
+    > Dim.5   1.587458         5.120833                    58.49180
+    > Dim.6   1.337160         4.313419                    62.80522
+    > Dim.7   1.076543         3.472720                    66.27794
+    > Dim.8   1.042319         3.362319                    69.64026
 
 8 factors possess eigenvalues above 1 with a cumulative variance of
-69.62810 %. A third approach is *Horn’s Method*. Here random data sets
-with equal size (columns and rows) as the original data set are
-generated and then a factor analysis is performed on each of them. The
-retained number of factors are then compared. The idea is that if the
-number of factors kept in the original data set is similar to the number
-of factors kept in the random sets, the factors of the original data set
-are considered not meaningful. If the number of factors of the original
-data set is larger than the number of factors in the random sets, the
-factors in the original data set are considered meaningful.
+69.64 %.
+
+``` r
+get_eig(wm_df_pca)[1:15,] %>% 
+  ggplot(aes(y=eigenvalue, x=1:15)) +
+  ggtitle("Eigenvalue by Component") +
+  labs(x = "Component",
+       y = "Eigenvalue") +
+  geom_line() +
+  geom_point(col = "blue") +
+  scale_x_continuous(breaks = 1:15) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+A third approach is *Horn’s Method*. Here random data sets with equal
+size (columns and rows) as the original data set are generated and then
+a factor analysis is performed on each of them. The retained number of
+factors are then compared. The idea is that if the number of factors
+kept in the original data set is similar to the number of factors kept
+in the random sets, the factors of the original data set are considered
+not meaningful. If the number of factors of the original data set is
+larger than the number of factors in the random sets, the factors in the
+original data set are considered meaningful[^4].
 
 ``` r
 wm_df_prepped %>%
   paran::paran()
 ```
 
-    ## 
-    ## Using eigendecomposition of correlation matrix.
-    ## Computing: 10%  20%  30%  40%  50%  60%  70%  80%  90%  100%
-    ## 
-    ## 
-    ## Results of Horn's Parallel Analysis for component retention
-    ## 930 iterations, using the mean estimate
-    ## 
-    ## -------------------------------------------------- 
-    ## Component   Adjusted    Unadjusted    Estimated 
-    ##             Eigenvalue  Eigenvalue    Bias 
-    ## -------------------------------------------------- 
-    ## 1           6.454097    6.611644      0.157547
-    ## 2           5.442660    5.580968      0.138308
-    ## 3           2.409584    2.533351      0.123767
-    ## 4           1.709922    1.820827      0.110905
-    ## 5           1.487982    1.587278      0.099296
-    ## 6           1.246912    1.335336      0.088423
-    ## -------------------------------------------------- 
-    ## 
-    ## Adjusted eigenvalues > 1 indicate dimensions to retain.
-    ## (6 components retained)
+    > 
+    > Using eigendecomposition of correlation matrix.
+    > Computing: 10%  20%  30%  40%  50%  60%  70%  80%  90%  100%
+    > 
+    > 
+    > Results of Horn's Parallel Analysis for component retention
+    > 930 iterations, using the mean estimate
+    > 
+    > -------------------------------------------------- 
+    > Component   Adjusted    Unadjusted    Estimated 
+    >             Eigenvalue  Eigenvalue    Bias 
+    > -------------------------------------------------- 
+    > 1           6.451207    6.608535      0.157328
+    > 2           5.446554    5.585121      0.138566
+    > 3           2.410440    2.533970      0.123529
+    > 4           1.706274    1.817373      0.111098
+    > 5           1.488188    1.587458      0.099269
+    > 6           1.248786    1.337159      0.088373
+    > -------------------------------------------------- 
+    > 
+    > Adjusted eigenvalues > 1 indicate dimensions to retain.
+    > (6 components retained)
 
 *Horn’s Method* suggests a number of 6 PCs to keep. I chose to keep 8
-with approximately 70 % cumulative variance. Next, we take a look at the
-contributions of the original variables to each new PC.
+with approximately 69.64 % cumulative variance. Next, we take a look at
+the contributions of the original variables to each new PC.
 
 ``` r
 n_PCs <- 8
@@ -459,7 +458,7 @@ for (i in 1:n_PCs) {
 }
 ```
 
-![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-18-2.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-18-3.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-18-4.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-18-5.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-18-6.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-18-7.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-18-8.png)<!-- -->
+![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-19-3.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-19-4.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-19-5.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-19-6.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-19-7.png)<!-- -->![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-19-8.png)<!-- -->
 
 The *psych* package comes with a function that can illustrate the
 contribution of each original variable to the PCs in one plot.
@@ -470,7 +469,7 @@ wm_df_prepped %>%
   psych::fa.diagram()
 ```
 
-![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 A new data set is created based on the new dimensions.
 
@@ -492,744 +491,58 @@ First, a vector containing all rotation methods is created. Then we
 iterate over each of them using a for-loop.
 
 ``` r
+options(width = 300)
 rot_meth <- c("varimax",
               "quartimax",
               "equamax",
               "oblimin",
-              "oblimax",
               "promax")
-
+max_cumvar <- 0
 for (rm in rot_meth) {
-  invisible(
-    readline(
-      prompt=paste0("[enter] to show next rotation result")))
-  cat("Factor Analysis results. Rotation method: ", rm)
-  wm_df_prepped %>%
-    factanal(factors = n_PCs,
-             rotation = rm,
-             lower = 0.1) %>% 
-    print
+  cat("Factor Analysis results. Rotation method: ", rm, "\n")
+  res <- factanal(wm_df_prepped,
+                  factors = n_PCs,
+                  rotation = rm,
+                  lower = 0.1) %>% 
+    steffanossaR::ex_factanal()
+  if (res[3,n_PCs] > max_cumvar & res[3,n_PCs] <= 1) {max_cumvar <- res[3,n_PCs]}
+  print(res)
+  cat("\n")
 }
 ```
 
-    ## [enter] to show next rotation result
-    ## Factor Analysis results. Rotation method:  varimax
-    ## Call:
-    ## factanal(x = ., factors = n_PCs, rotation = rm, lower = 0.1)
-    ## 
-    ## Uniquenesses:
-    ##                    Flaeche               Bevoelkerung 
-    ##                      0.368                      0.100 
-    ##        Bevoelkerungsdichte              Inselgemeinde 
-    ##                      0.108                      0.969 
-    ##            Kuestengemeinde         Urbanisierungsgrad 
-    ##                      0.705                      0.319 
-    ##     Geologischer_Indikator            Abfaelle_gesamt 
-    ##                      0.151                      0.100 
-    ##          Abfaelle_sortiert        Abfaelle_unsortiert 
-    ##                      0.100                      0.100 
-    ##            Sortierungsgrad                   Sort_Bio 
-    ##                      0.100                      0.100 
-    ##                Sort_Papier                  Sort_Glas 
-    ##                      0.587                      0.709 
-    ##                  Sort_Holz                Sort_Metall 
-    ##                      0.481                      0.644 
-    ##               Sort_Plastik              Sort_Elektrik 
-    ##                      0.680                      0.779 
-    ##                Sort_Textil                  Sort_Rest 
-    ##                      0.922                      0.581 
-    ##         Verwendung_Energie         Verwendung_Deponie 
-    ##                      0.100                      0.100 
-    ##       Verwendung_Recycling       Verwendung_Unbekannt 
-    ##                      0.285                      0.100 
-    ##         Steuern_gewerblich             Steuern_privat 
-    ##                      0.575                      0.289 
-    ##               Kosten_Basis          Kosten_Sortierung 
-    ##                      0.100                      0.698 
-    ##           Kosten_sonstiges Gebuehrenregelung_STANDARD 
-    ##                      0.460                      0.841 
-    ##           Region_PAYT_Nein 
-    ##                      0.238 
-    ## 
-    ## Loadings:
-    ##                            Factor1 Factor2 Factor3 Factor4 Factor5 Factor6
-    ## Flaeche                     0.243  -0.120                   0.724         
-    ## Bevoelkerung                0.964                                         
-    ## Bevoelkerungsdichte         0.651   0.117                  -0.669         
-    ## Inselgemeinde                                       0.169                 
-    ## Kuestengemeinde             0.220  -0.281           0.322                 
-    ## Urbanisierungsgrad         -0.725                           0.383         
-    ## Geologischer_Indikator              0.896          -0.127  -0.100         
-    ## Abfaelle_gesamt             0.959                   0.109   0.120         
-    ## Abfaelle_sortiert           0.943   0.126                   0.102         
-    ## Abfaelle_unsortiert         0.880          -0.261   0.144   0.126         
-    ## Sortierungsgrad            -0.315   0.317   0.633  -0.107  -0.132   0.165 
-    ## Sort_Bio                   -0.402           0.352          -0.105   0.140 
-    ## Sort_Papier                 0.187   0.254   0.451  -0.110           0.179 
-    ## Sort_Glas                  -0.316           0.409                         
-    ## Sort_Holz                   0.181   0.651   0.166          -0.111   0.127 
-    ## Sort_Metall                -0.133   0.439   0.372                         
-    ## Sort_Plastik                       -0.101   0.544                         
-    ## Sort_Elektrik                       0.264   0.373                         
-    ## Sort_Textil                                 0.252                         
-    ## Sort_Rest                           0.492   0.262          -0.206   0.110 
-    ## Verwendung_Energie                  0.419          -0.152  -0.202   0.175 
-    ## Verwendung_Deponie                 -0.500  -0.113           0.219   0.630 
-    ## Verwendung_Recycling       -0.214   0.414   0.599          -0.123         
-    ## Verwendung_Unbekannt               -0.117  -0.236   0.101          -0.866 
-    ## Steuern_gewerblich         -0.314  -0.338           0.338   0.197  -0.226 
-    ## Steuern_privat              0.177   0.808                                 
-    ## Kosten_Basis                       -0.111  -0.222   0.896   0.133         
-    ## Kosten_Sortierung           0.140           0.202   0.460                 
-    ## Kosten_sonstiges           -0.117  -0.184  -0.425   0.509                 
-    ## Gebuehrenregelung_STANDARD         -0.327  -0.112   0.111  -0.126         
-    ## Region_PAYT_Nein                   -0.810           0.199                 
-    ##                            Factor7 Factor8
-    ## Flaeche                             0.125 
-    ## Bevoelkerung                              
-    ## Bevoelkerungsdichte                       
-    ## Inselgemeinde                             
-    ## Kuestengemeinde                     0.229 
-    ## Urbanisierungsgrad                        
-    ## Geologischer_Indikator                    
-    ## Abfaelle_gesamt                           
-    ## Abfaelle_sortiert                         
-    ## Abfaelle_unsortiert        -0.116         
-    ## Sortierungsgrad             0.524         
-    ## Sort_Bio                    0.767         
-    ## Sort_Papier                         0.250 
-    ## Sort_Glas                          -0.102 
-    ## Sort_Holz                                 
-    ## Sort_Metall                               
-    ## Sort_Plastik                              
-    ## Sort_Elektrik                             
-    ## Sort_Textil                               
-    ## Sort_Rest                          -0.219 
-    ## Verwendung_Energie                 -0.798 
-    ## Verwendung_Deponie                  0.448 
-    ## Verwendung_Recycling        0.350         
-    ## Verwendung_Unbekannt       -0.165   0.220 
-    ## Steuern_gewerblich                        
-    ## Steuern_privat                            
-    ## Kosten_Basis                              
-    ## Kosten_Sortierung           0.129         
-    ## Kosten_sonstiges           -0.199         
-    ## Gebuehrenregelung_STANDARD                
-    ## Region_PAYT_Nein                    0.232 
-    ## 
-    ##                Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-    ## SS loadings      5.262   4.240   2.439   1.727   1.473   1.373   1.173   1.165
-    ## Proportion Var   0.170   0.137   0.079   0.056   0.048   0.044   0.038   0.038
-    ## Cumulative Var   0.170   0.306   0.385   0.441   0.488   0.533   0.571   0.608
-    ## 
-    ## Test of the hypothesis that 8 factors are sufficient.
-    ## The chi square statistic is 32134.73 on 245 degrees of freedom.
-    ## The p-value is 0 
-    ## [enter] to show next rotation result
-    ## Factor Analysis results. Rotation method:  quartimax
-    ## Call:
-    ## factanal(x = ., factors = n_PCs, rotation = rm, lower = 0.1)
-    ## 
-    ## Uniquenesses:
-    ##                    Flaeche               Bevoelkerung 
-    ##                      0.368                      0.100 
-    ##        Bevoelkerungsdichte              Inselgemeinde 
-    ##                      0.108                      0.969 
-    ##            Kuestengemeinde         Urbanisierungsgrad 
-    ##                      0.705                      0.319 
-    ##     Geologischer_Indikator            Abfaelle_gesamt 
-    ##                      0.151                      0.100 
-    ##          Abfaelle_sortiert        Abfaelle_unsortiert 
-    ##                      0.100                      0.100 
-    ##            Sortierungsgrad                   Sort_Bio 
-    ##                      0.100                      0.100 
-    ##                Sort_Papier                  Sort_Glas 
-    ##                      0.587                      0.709 
-    ##                  Sort_Holz                Sort_Metall 
-    ##                      0.481                      0.644 
-    ##               Sort_Plastik              Sort_Elektrik 
-    ##                      0.680                      0.779 
-    ##                Sort_Textil                  Sort_Rest 
-    ##                      0.922                      0.581 
-    ##         Verwendung_Energie         Verwendung_Deponie 
-    ##                      0.100                      0.100 
-    ##       Verwendung_Recycling       Verwendung_Unbekannt 
-    ##                      0.285                      0.100 
-    ##         Steuern_gewerblich             Steuern_privat 
-    ##                      0.575                      0.289 
-    ##               Kosten_Basis          Kosten_Sortierung 
-    ##                      0.100                      0.698 
-    ##           Kosten_sonstiges Gebuehrenregelung_STANDARD 
-    ##                      0.460                      0.841 
-    ##           Region_PAYT_Nein 
-    ##                      0.238 
-    ## 
-    ## Loadings:
-    ##                            Factor1 Factor2 Factor3 Factor4 Factor5 Factor6
-    ## Flaeche                     0.297  -0.166  -0.143           0.681         
-    ## Bevoelkerung                0.967          -0.100                         
-    ## Bevoelkerungsdichte         0.600   0.143                  -0.700         
-    ## Inselgemeinde                                       0.163                 
-    ## Kuestengemeinde             0.228  -0.312           0.290  -0.113         
-    ## Urbanisierungsgrad         -0.695                           0.427         
-    ## Geologischer_Indikator              0.912                                 
-    ## Abfaelle_gesamt             0.969          -0.125                         
-    ## Abfaelle_sortiert           0.957                                         
-    ## Abfaelle_unsortiert         0.883          -0.295   0.113                 
-    ## Sortierungsgrad            -0.301   0.240   0.866  -0.119          -0.116 
-    ## Sort_Bio                   -0.405           0.805                         
-    ## Sort_Papier                 0.212   0.191   0.345  -0.152          -0.187 
-    ## Sort_Glas                  -0.303           0.254                         
-    ## Sort_Holz                   0.192   0.634   0.203                  -0.127 
-    ## Sort_Metall                -0.110   0.407   0.284                         
-    ## Sort_Plastik                       -0.162   0.439                         
-    ## Sort_Elektrik                       0.219   0.271           0.112         
-    ## Sort_Textil                                 0.210  -0.107                 
-    ## Sort_Rest                           0.488   0.231          -0.154         
-    ## Verwendung_Energie                  0.490          -0.109  -0.150  -0.142 
-    ## Verwendung_Deponie                 -0.533  -0.165           0.144  -0.655 
-    ## Verwendung_Recycling       -0.191   0.340   0.725                         
-    ## Verwendung_Unbekannt                       -0.350                   0.837 
-    ## Steuern_gewerblich         -0.285  -0.361  -0.105   0.323   0.191   0.228 
-    ## Steuern_privat              0.187   0.803   0.121                         
-    ## Kosten_Basis                0.147  -0.177  -0.189   0.897                 
-    ## Kosten_Sortierung           0.181  -0.139   0.239   0.421                 
-    ## Kosten_sonstiges                   -0.177  -0.439   0.540                 
-    ## Gebuehrenregelung_STANDARD         -0.307  -0.165          -0.149         
-    ## Region_PAYT_Nein                   -0.836           0.117                 
-    ##                            Factor7 Factor8
-    ## Flaeche                     0.135         
-    ## Bevoelkerung                              
-    ## Bevoelkerungsdichte                       
-    ## Inselgemeinde                             
-    ## Kuestengemeinde             0.199         
-    ## Urbanisierungsgrad                        
-    ## Geologischer_Indikator                    
-    ## Abfaelle_gesamt                           
-    ## Abfaelle_sortiert                         
-    ## Abfaelle_unsortiert                -0.121 
-    ## Sortierungsgrad                           
-    ## Sort_Bio                           -0.302 
-    ## Sort_Papier                 0.267   0.281 
-    ## Sort_Glas                           0.326 
-    ## Sort_Holz                           0.121 
-    ## Sort_Metall                         0.305 
-    ## Sort_Plastik                        0.312 
-    ## Sort_Elektrik                       0.288 
-    ## Sort_Textil                         0.127 
-    ## Sort_Rest                  -0.189   0.234 
-    ## Verwendung_Energie         -0.785         
-    ## Verwendung_Deponie          0.386         
-    ## Verwendung_Recycling                0.181 
-    ## Verwendung_Unbekannt        0.255         
-    ## Steuern_gewerblich                        
-    ## Steuern_privat                            
-    ## Kosten_Basis                              
-    ## Kosten_Sortierung                         
-    ## Kosten_sonstiges                          
-    ## Gebuehrenregelung_STANDARD                
-    ## Region_PAYT_Nein            0.186         
-    ## 
-    ##                Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-    ## SS loadings      5.235   4.281   3.233   1.638   1.336   1.319   1.072   0.738
-    ## Proportion Var   0.169   0.138   0.104   0.053   0.043   0.043   0.035   0.024
-    ## Cumulative Var   0.169   0.307   0.411   0.464   0.507   0.550   0.584   0.608
-    ## 
-    ## Test of the hypothesis that 8 factors are sufficient.
-    ## The chi square statistic is 32134.73 on 245 degrees of freedom.
-    ## The p-value is 0 
-    ## [enter] to show next rotation result
-    ## Factor Analysis results. Rotation method:  equamax
-    ## Call:
-    ## factanal(x = ., factors = n_PCs, rotation = rm, lower = 0.1)
-    ## 
-    ## Uniquenesses:
-    ##                    Flaeche               Bevoelkerung 
-    ##                      0.368                      0.100 
-    ##        Bevoelkerungsdichte              Inselgemeinde 
-    ##                      0.108                      0.969 
-    ##            Kuestengemeinde         Urbanisierungsgrad 
-    ##                      0.705                      0.319 
-    ##     Geologischer_Indikator            Abfaelle_gesamt 
-    ##                      0.151                      0.100 
-    ##          Abfaelle_sortiert        Abfaelle_unsortiert 
-    ##                      0.100                      0.100 
-    ##            Sortierungsgrad                   Sort_Bio 
-    ##                      0.100                      0.100 
-    ##                Sort_Papier                  Sort_Glas 
-    ##                      0.587                      0.709 
-    ##                  Sort_Holz                Sort_Metall 
-    ##                      0.481                      0.644 
-    ##               Sort_Plastik              Sort_Elektrik 
-    ##                      0.680                      0.779 
-    ##                Sort_Textil                  Sort_Rest 
-    ##                      0.922                      0.581 
-    ##         Verwendung_Energie         Verwendung_Deponie 
-    ##                      0.100                      0.100 
-    ##       Verwendung_Recycling       Verwendung_Unbekannt 
-    ##                      0.285                      0.100 
-    ##         Steuern_gewerblich             Steuern_privat 
-    ##                      0.575                      0.289 
-    ##               Kosten_Basis          Kosten_Sortierung 
-    ##                      0.100                      0.698 
-    ##           Kosten_sonstiges Gebuehrenregelung_STANDARD 
-    ##                      0.460                      0.841 
-    ##           Region_PAYT_Nein 
-    ##                      0.238 
-    ## 
-    ## Loadings:
-    ##                            Factor1 Factor2 Factor3 Factor4 Factor5 Factor6
-    ## Flaeche                     0.445          -0.155   0.213   0.114  -0.586 
-    ## Bevoelkerung                0.914          -0.218                   0.244 
-    ## Bevoelkerungsdichte         0.395                  -0.128           0.844 
-    ## Inselgemeinde                                               0.168         
-    ## Kuestengemeinde             0.168  -0.195           0.296   0.322   0.151 
-    ## Urbanisierungsgrad         -0.550                                  -0.602 
-    ## Geologischer_Indikator              0.825          -0.330  -0.125         
-    ## Abfaelle_gesamt             0.920          -0.229                   0.215 
-    ## Abfaelle_sortiert           0.914   0.109  -0.168                   0.226 
-    ## Abfaelle_unsortiert         0.820          -0.324           0.163   0.185 
-    ## Sortierungsgrad            -0.212   0.146   0.786  -0.107  -0.195         
-    ## Sort_Bio                   -0.300           0.888          -0.129         
-    ## Sort_Papier                 0.228   0.205   0.161   0.204  -0.183         
-    ## Sort_Glas                  -0.253  -0.171   0.152                  -0.106 
-    ## Sort_Holz                   0.165   0.558   0.101  -0.212           0.173 
-    ## Sort_Metall                         0.311   0.156  -0.153  -0.102         
-    ## Sort_Plastik                       -0.225   0.291                         
-    ## Sort_Elektrik                       0.166   0.145                         
-    ## Sort_Textil                                 0.129          -0.115         
-    ## Sort_Rest                           0.340   0.115  -0.341           0.171 
-    ## Verwendung_Energie                  0.205          -0.893  -0.122   0.146 
-    ## Verwendung_Deponie                 -0.314  -0.173   0.584          -0.143 
-    ## Verwendung_Recycling       -0.129   0.249   0.615          -0.117         
-    ## Verwendung_Unbekannt                       -0.253   0.222                 
-    ## Steuern_gewerblich         -0.230  -0.319           0.113   0.340  -0.291 
-    ## Steuern_privat              0.159   0.770   0.107  -0.182           0.155 
-    ## Kosten_Basis                0.116          -0.135   0.119   0.918         
-    ## Kosten_Sortierung           0.208  -0.112   0.193           0.421         
-    ## Kosten_sonstiges           -0.144          -0.318           0.570         
-    ## Gebuehrenregelung_STANDARD -0.103  -0.300  -0.139           0.126   0.101 
-    ## Region_PAYT_Nein                   -0.728           0.435   0.179         
-    ##                            Factor7 Factor8
-    ## Flaeche                                   
-    ## Bevoelkerung                              
-    ## Bevoelkerungsdichte                       
-    ## Inselgemeinde                             
-    ## Kuestengemeinde            -0.109         
-    ## Urbanisierungsgrad                        
-    ## Geologischer_Indikator      0.149         
-    ## Abfaelle_gesamt                           
-    ## Abfaelle_sortiert                         
-    ## Abfaelle_unsortiert        -0.228         
-    ## Sortierungsgrad             0.403   0.191 
-    ## Sort_Bio                            0.143 
-    ## Sort_Papier                 0.416   0.206 
-    ## Sort_Glas                   0.380         
-    ## Sort_Holz                   0.261   0.138 
-    ## Sort_Metall                 0.440         
-    ## Sort_Plastik                0.422         
-    ## Sort_Elektrik               0.400         
-    ## Sort_Textil                 0.186         
-    ## Sort_Rest                   0.342   0.126 
-    ## Verwendung_Energie                  0.189 
-    ## Verwendung_Deponie         -0.198   0.617 
-    ## Verwendung_Recycling        0.479         
-    ## Verwendung_Unbekannt       -0.105  -0.880 
-    ## Steuern_gewerblich                 -0.231 
-    ## Steuern_privat              0.111         
-    ## Kosten_Basis                              
-    ## Kosten_Sortierung           0.165         
-    ## Kosten_sonstiges           -0.242  -0.117 
-    ## Gebuehrenregelung_STANDARD -0.111         
-    ## Region_PAYT_Nein                          
-    ## 
-    ##                Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-    ## SS loadings      4.364   2.982   2.565   1.981   1.903   1.900   1.725   1.432
-    ## Proportion Var   0.141   0.096   0.083   0.064   0.061   0.061   0.056   0.046
-    ## Cumulative Var   0.141   0.237   0.320   0.384   0.445   0.506   0.562   0.608
-    ## 
-    ## Test of the hypothesis that 8 factors are sufficient.
-    ## The chi square statistic is 32134.73 on 245 degrees of freedom.
-    ## The p-value is 0 
-    ## [enter] to show next rotation result
-    ## Factor Analysis results. Rotation method:  oblimin
-    ## Call:
-    ## factanal(x = ., factors = n_PCs, rotation = rm, lower = 0.1)
-    ## 
-    ## Uniquenesses:
-    ##                    Flaeche               Bevoelkerung 
-    ##                      0.368                      0.100 
-    ##        Bevoelkerungsdichte              Inselgemeinde 
-    ##                      0.108                      0.969 
-    ##            Kuestengemeinde         Urbanisierungsgrad 
-    ##                      0.705                      0.319 
-    ##     Geologischer_Indikator            Abfaelle_gesamt 
-    ##                      0.151                      0.100 
-    ##          Abfaelle_sortiert        Abfaelle_unsortiert 
-    ##                      0.100                      0.100 
-    ##            Sortierungsgrad                   Sort_Bio 
-    ##                      0.100                      0.100 
-    ##                Sort_Papier                  Sort_Glas 
-    ##                      0.587                      0.709 
-    ##                  Sort_Holz                Sort_Metall 
-    ##                      0.481                      0.644 
-    ##               Sort_Plastik              Sort_Elektrik 
-    ##                      0.680                      0.779 
-    ##                Sort_Textil                  Sort_Rest 
-    ##                      0.922                      0.581 
-    ##         Verwendung_Energie         Verwendung_Deponie 
-    ##                      0.100                      0.100 
-    ##       Verwendung_Recycling       Verwendung_Unbekannt 
-    ##                      0.285                      0.100 
-    ##         Steuern_gewerblich             Steuern_privat 
-    ##                      0.575                      0.289 
-    ##               Kosten_Basis          Kosten_Sortierung 
-    ##                      0.100                      0.698 
-    ##           Kosten_sonstiges Gebuehrenregelung_STANDARD 
-    ##                      0.460                      0.841 
-    ##           Region_PAYT_Nein 
-    ##                      0.238 
-    ## 
-    ## Loadings:
-    ##                            Factor1 Factor2 Factor3 Factor4 Factor5 Factor6
-    ## Flaeche                     0.501                                  -0.688 
-    ## Bevoelkerung                0.944                                         
-    ## Bevoelkerungsdichte         0.367                                   0.770 
-    ## Inselgemeinde                                       0.176                 
-    ## Kuestengemeinde             0.146  -0.152           0.302           0.180 
-    ## Urbanisierungsgrad         -0.538                                  -0.490 
-    ## Geologischer_Indikator     -0.128   0.886                                 
-    ## Abfaelle_gesamt             0.940                                         
-    ## Abfaelle_sortiert           0.936                                         
-    ## Abfaelle_unsortiert         0.833          -0.115   0.102  -0.185         
-    ## Sortierungsgrad                     0.104   0.690           0.292         
-    ## Sort_Bio                   -0.102           0.962          -0.139         
-    ## Sort_Papier                 0.191   0.228          -0.159   0.400         
-    ## Sort_Glas                  -0.249  -0.234                   0.423         
-    ## Sort_Holz                   0.111   0.587                   0.189         
-    ## Sort_Metall                -0.120   0.305                   0.415         
-    ## Sort_Plastik                       -0.298   0.190           0.464         
-    ## Sort_Elektrik                       0.159                   0.399         
-    ## Sort_Textil                                        -0.114   0.190         
-    ## Sort_Rest                  -0.108   0.320                   0.312   0.149 
-    ## Verwendung_Energie                                                        
-    ## Verwendung_Deponie                 -0.192  -0.137          -0.135         
-    ## Verwendung_Recycling                0.222   0.487           0.392         
-    ## Verwendung_Unbekannt                       -0.174                         
-    ## Steuern_gewerblich         -0.230  -0.320           0.302   0.113  -0.193 
-    ## Steuern_privat              0.114   0.833                                 
-    ## Kosten_Basis                                        0.953                 
-    ## Kosten_Sortierung           0.246  -0.123   0.261   0.446   0.204         
-    ## Kosten_sonstiges           -0.232          -0.237   0.564  -0.177         
-    ## Gebuehrenregelung_STANDARD -0.123  -0.312  -0.125                   0.162 
-    ## Region_PAYT_Nein                   -0.752                           0.105 
-    ##                            Factor7 Factor8
-    ## Flaeche                                   
-    ## Bevoelkerung                              
-    ## Bevoelkerungsdichte                       
-    ## Inselgemeinde                             
-    ## Kuestengemeinde             0.229         
-    ## Urbanisierungsgrad                        
-    ## Geologischer_Indikator                    
-    ## Abfaelle_gesamt                           
-    ## Abfaelle_sortiert                         
-    ## Abfaelle_unsortiert                       
-    ## Sortierungsgrad                           
-    ## Sort_Bio                                  
-    ## Sort_Papier                 0.297   0.207 
-    ## Sort_Glas                          -0.105 
-    ## Sort_Holz                           0.128 
-    ## Sort_Metall                               
-    ## Sort_Plastik                              
-    ## Sort_Elektrik                             
-    ## Sort_Textil                               
-    ## Sort_Rest                  -0.215         
-    ## Verwendung_Energie         -0.900         
-    ## Verwendung_Deponie          0.412   0.712 
-    ## Verwendung_Recycling                      
-    ## Verwendung_Unbekannt        0.314  -0.820 
-    ## Steuern_gewerblich                 -0.210 
-    ## Steuern_privat                            
-    ## Kosten_Basis                              
-    ## Kosten_Sortierung                         
-    ## Kosten_sonstiges                          
-    ## Gebuehrenregelung_STANDARD                
-    ## Region_PAYT_Nein            0.233         
-    ## 
-    ##                Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-    ## SS loadings      4.437   3.168   1.912   1.737   1.482   1.479   1.355   1.336
-    ## Proportion Var   0.143   0.102   0.062   0.056   0.048   0.048   0.044   0.043
-    ## Cumulative Var   0.143   0.245   0.307   0.363   0.411   0.459   0.502   0.545
-    ## 
-    ## Factor Correlations:
-    ##         Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-    ## Factor1  1.0000 -0.0939 -0.0400 -0.3638  0.1247  0.2537  0.0965  0.0473
-    ## Factor2 -0.0939  1.0000 -0.1084 -0.1580  0.2708 -0.1824  0.4422  0.2628
-    ## Factor3 -0.0400 -0.1084  1.0000 -0.1607  0.0982  0.0407 -0.0091  0.0420
-    ## Factor4 -0.3638 -0.1580 -0.1607  1.0000 -0.2933  0.0623 -0.1330 -0.4443
-    ## Factor5  0.1247  0.2708  0.0982 -0.2933  1.0000 -0.1450  0.2261  0.1925
-    ## Factor6  0.2537 -0.1824  0.0407  0.0623 -0.1450  1.0000 -0.2260 -0.0404
-    ## Factor7  0.0965  0.4422 -0.0091 -0.1330  0.2261 -0.2260  1.0000  0.1175
-    ## Factor8  0.0473  0.2628  0.0420 -0.4443  0.1925 -0.0404  0.1175  1.0000
-    ## 
-    ## Test of the hypothesis that 8 factors are sufficient.
-    ## The chi square statistic is 32134.73 on 245 degrees of freedom.
-    ## The p-value is 0 
-    ## [enter] to show next rotation result
-    ## Factor Analysis results. Rotation method:  oblimax
-    ## Call:
-    ## factanal(x = ., factors = n_PCs, rotation = rm, lower = 0.1)
-    ## 
-    ## Uniquenesses:
-    ##                    Flaeche               Bevoelkerung 
-    ##                      0.368                      0.100 
-    ##        Bevoelkerungsdichte              Inselgemeinde 
-    ##                      0.108                      0.969 
-    ##            Kuestengemeinde         Urbanisierungsgrad 
-    ##                      0.705                      0.319 
-    ##     Geologischer_Indikator            Abfaelle_gesamt 
-    ##                      0.151                      0.100 
-    ##          Abfaelle_sortiert        Abfaelle_unsortiert 
-    ##                      0.100                      0.100 
-    ##            Sortierungsgrad                   Sort_Bio 
-    ##                      0.100                      0.100 
-    ##                Sort_Papier                  Sort_Glas 
-    ##                      0.587                      0.709 
-    ##                  Sort_Holz                Sort_Metall 
-    ##                      0.481                      0.644 
-    ##               Sort_Plastik              Sort_Elektrik 
-    ##                      0.680                      0.779 
-    ##                Sort_Textil                  Sort_Rest 
-    ##                      0.922                      0.581 
-    ##         Verwendung_Energie         Verwendung_Deponie 
-    ##                      0.100                      0.100 
-    ##       Verwendung_Recycling       Verwendung_Unbekannt 
-    ##                      0.285                      0.100 
-    ##         Steuern_gewerblich             Steuern_privat 
-    ##                      0.575                      0.289 
-    ##               Kosten_Basis          Kosten_Sortierung 
-    ##                      0.100                      0.698 
-    ##           Kosten_sonstiges Gebuehrenregelung_STANDARD 
-    ##                      0.460                      0.841 
-    ##           Region_PAYT_Nein 
-    ##                      0.238 
-    ## 
-    ## Loadings:
-    ##                            Factor1      Factor2      Factor3      Factor4     
-    ## Flaeche                     9765913.005  9765912.325        0.839       -0.723
-    ## Bevoelkerung                 249550.835   249550.932        0.758             
-    ## Bevoelkerungsdichte        -9967147.724 -9967146.900       -0.136        0.859
-    ## Inselgemeinde               -682826.376  -682826.253                          
-    ## Kuestengemeinde            -2331264.085 -2331263.377                     0.249
-    ## Urbanisierungsgrad          6049376.485  6049375.954       -0.173       -0.533
-    ## Geologischer_Indikator       -88870.116   -88871.180        0.476       -0.272
-    ## Abfaelle_gesamt              755963.085   755963.043        0.844             
-    ## Abfaelle_sortiert            645541.184   645541.074        0.850             
-    ## Abfaelle_unsortiert          637814.350   637814.462        0.725       -0.115
-    ## Sortierungsgrad             -329776.654  -329777.094       -0.148        0.451
-    ## Sort_Bio                     213499.925   213499.652       -0.322        0.430
-    ## Sort_Papier                  179924.784   179924.709        0.397        0.301
-    ## Sort_Glas                    145235.961   145235.910       -0.338             
-    ## Sort_Holz                   -957381.475  -957382.066        0.463        0.152
-    ## Sort_Metall                  407835.483   407834.941        0.159             
-    ## Sort_Plastik                 161340.603   161340.679       -0.142        0.180
-    ## Sort_Elektrik               1255948.197  1255947.816        0.182             
-    ## Sort_Textil                 -411840.600  -411840.560                     0.164
-    ## Sort_Rest                  -1961570.546 -1961570.969                     0.215
-    ## Verwendung_Energie          -137322.957  -137323.812                          
-    ## Verwendung_Deponie          1041159.869  1041160.826                     0.708
-    ## Verwendung_Recycling        -661525.815  -661526.290                     0.260
-    ## Verwendung_Unbekannt        -248017.156  -248017.133                    -1.011
-    ## Steuern_gewerblich          2197612.537  2197612.665       -0.285       -0.437
-    ## Steuern_privat              -492833.259  -492834.117        0.616       -0.163
-    ## Kosten_Basis                 222461.664   222461.923        0.129       -0.138
-    ## Kosten_Sortierung            755074.498   755074.524        0.133             
-    ## Kosten_sonstiges            -244088.190  -244087.870       -0.129       -0.241
-    ## Gebuehrenregelung_STANDARD -2349452.594 -2349451.998       -0.391        0.189
-    ## Region_PAYT_Nein           -1729960.931 -1729959.739       -0.562        0.259
-    ##                            Factor5      Factor6      Factor7      Factor8     
-    ## Flaeche                          -0.551       -0.435        0.282             
-    ## Bevoelkerung                                   0.273        0.485       -0.103
-    ## Bevoelkerungsdichte               0.558        0.653        0.151             
-    ## Inselgemeinde                                                            0.162
-    ## Kuestengemeinde                   0.296        0.177                     0.274
-    ## Urbanisierungsgrad               -0.318       -0.504       -0.258             
-    ## Geologischer_Indikator           -0.122       -0.215       -0.116             
-    ## Abfaelle_gesamt                                0.209        0.508             
-    ## Abfaelle_sortiert                              0.267        0.501             
-    ## Abfaelle_unsortiert              -0.105                     0.454             
-    ## Sortierungsgrad                   0.323                                       
-    ## Sort_Bio                          0.380       -0.448                          
-    ## Sort_Papier                       0.164        0.283       -0.155             
-    ## Sort_Glas                         0.116        0.261                          
-    ## Sort_Holz                                                                     
-    ## Sort_Metall                                    0.166       -0.101             
-    ## Sort_Plastik                      0.228        0.328                          
-    ## Sort_Elektrik                                  0.158                          
-    ## Sort_Textil                       0.123        0.172                          
-    ## Sort_Rest                                      0.236                          
-    ## Verwendung_Energie               -0.701                     0.433             
-    ## Verwendung_Deponie               -0.222                    -0.366        0.109
-    ## Verwendung_Recycling              0.348                                       
-    ## Verwendung_Unbekannt              0.593                                 -0.110
-    ## Steuern_gewerblich                                                       0.261
-    ## Steuern_privat                                -0.167                          
-    ## Kosten_Basis                                                0.182        0.854
-    ## Kosten_Sortierung                 0.135        0.105        0.268        0.422
-    ## Kosten_sonstiges                 -0.123                                  0.477
-    ## Gebuehrenregelung_STANDARD                     0.185                          
-    ## Region_PAYT_Nein                  0.401        0.330                          
-    ## 
-    ##                     Factor1      Factor2      Factor3      Factor4      Factor5
-    ## SS loadings    2.614561e+14 2.614560e+14 5.194000e+00 4.306000e+00 2.423000e+00
-    ## Proportion Var 8.434067e+12 8.434066e+12 1.680000e-01 1.390000e-01 7.800000e-02
-    ## Cumulative Var 8.434067e+12 1.686813e+13 1.686813e+13 1.686813e+13 1.686813e+13
-    ##                     Factor6      Factor7      Factor8
-    ## SS loadings    1.956000e+00 1.624000e+00 1.386000e+00
-    ## Proportion Var 6.300000e-02 5.200000e-02 4.500000e-02
-    ## Cumulative Var 1.686813e+13 1.686813e+13 1.686813e+13
-    ## 
-    ## Factor Correlations:
-    ##         Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-    ## Factor1  1.0000  1.0000  0.4717 -0.3044 -0.0397  0.2550  0.3670  0.3658
-    ## Factor2  1.0000  1.0000  0.4717 -0.3044 -0.0397  0.2550  0.3670  0.3658
-    ## Factor3  0.4717  0.4717  1.0000 -0.4037  0.0792  0.0161  0.2106  0.2073
-    ## Factor4 -0.3044 -0.3044 -0.4037  1.0000  0.0726 -0.0222 -0.1885 -0.2095
-    ## Factor5 -0.0397 -0.0397  0.0792  0.0726  1.0000 -0.1266 -0.0847 -0.0469
-    ## Factor6  0.2550  0.2550  0.0161 -0.0222 -0.1266  1.0000  0.0957  0.0646
-    ## Factor7  0.3670  0.3670  0.2106 -0.1885 -0.0847  0.0957  1.0000  0.1663
-    ## Factor8  0.3658  0.3658  0.2073 -0.2095 -0.0469  0.0646  0.1663  1.0000
-    ## 
-    ## Test of the hypothesis that 8 factors are sufficient.
-    ## The chi square statistic is 32134.73 on 245 degrees of freedom.
-    ## The p-value is 0 
-    ## [enter] to show next rotation result
-    ## Factor Analysis results. Rotation method:  promax
-    ## Call:
-    ## factanal(x = ., factors = n_PCs, rotation = rm, lower = 0.1)
-    ## 
-    ## Uniquenesses:
-    ##                    Flaeche               Bevoelkerung 
-    ##                      0.368                      0.100 
-    ##        Bevoelkerungsdichte              Inselgemeinde 
-    ##                      0.108                      0.969 
-    ##            Kuestengemeinde         Urbanisierungsgrad 
-    ##                      0.705                      0.319 
-    ##     Geologischer_Indikator            Abfaelle_gesamt 
-    ##                      0.151                      0.100 
-    ##          Abfaelle_sortiert        Abfaelle_unsortiert 
-    ##                      0.100                      0.100 
-    ##            Sortierungsgrad                   Sort_Bio 
-    ##                      0.100                      0.100 
-    ##                Sort_Papier                  Sort_Glas 
-    ##                      0.587                      0.709 
-    ##                  Sort_Holz                Sort_Metall 
-    ##                      0.481                      0.644 
-    ##               Sort_Plastik              Sort_Elektrik 
-    ##                      0.680                      0.779 
-    ##                Sort_Textil                  Sort_Rest 
-    ##                      0.922                      0.581 
-    ##         Verwendung_Energie         Verwendung_Deponie 
-    ##                      0.100                      0.100 
-    ##       Verwendung_Recycling       Verwendung_Unbekannt 
-    ##                      0.285                      0.100 
-    ##         Steuern_gewerblich             Steuern_privat 
-    ##                      0.575                      0.289 
-    ##               Kosten_Basis          Kosten_Sortierung 
-    ##                      0.100                      0.698 
-    ##           Kosten_sonstiges Gebuehrenregelung_STANDARD 
-    ##                      0.460                      0.841 
-    ##           Region_PAYT_Nein 
-    ##                      0.238 
-    ## 
-    ## Loadings:
-    ##                            Factor1 Factor2 Factor3 Factor4 Factor5 Factor6
-    ## Flaeche                     0.436                                         
-    ## Bevoelkerung                1.004          -0.106                         
-    ## Bevoelkerungsdichte         0.474                                         
-    ## Inselgemeinde                                       0.182                 
-    ## Kuestengemeinde             0.149          -0.159   0.282           0.231 
-    ## Urbanisierungsgrad         -0.627                                         
-    ## Geologischer_Indikator     -0.162           0.966          -0.103         
-    ## Abfaelle_gesamt             0.993                                         
-    ## Abfaelle_sortiert           0.995                                         
-    ## Abfaelle_unsortiert         0.871  -0.259                                 
-    ## Sortierungsgrad            -0.127   0.876                   0.101         
-    ## Sort_Bio                   -0.176   0.690                                 
-    ## Sort_Papier                 0.168   0.472   0.136           0.130   0.326 
-    ## Sort_Glas                  -0.208   0.399  -0.275                         
-    ## Sort_Holz                   0.107   0.171   0.584           0.117         
-    ## Sort_Metall                -0.111   0.371   0.288                         
-    ## Sort_Plastik                0.104   0.628  -0.370                         
-    ## Sort_Elektrik                       0.393   0.129                         
-    ## Sort_Textil                 0.114   0.276  -0.124                         
-    ## Sort_Rest                           0.230   0.301           0.130  -0.190 
-    ## Verwendung_Energie          0.126  -0.157   0.114           0.271  -0.947 
-    ## Verwendung_Deponie         -0.123  -0.192  -0.308           0.644   0.402 
-    ## Verwendung_Recycling                0.794   0.201                         
-    ## Verwendung_Unbekannt               -0.211                  -0.925   0.344 
-    ## Steuern_gewerblich         -0.221          -0.279   0.274  -0.183         
-    ## Steuern_privat                              0.900          -0.124   0.130 
-    ## Kosten_Basis                                0.114   0.970                 
-    ## Kosten_Sortierung           0.267   0.379  -0.111   0.472                 
-    ## Kosten_sonstiges           -0.238  -0.447           0.540                 
-    ## Gebuehrenregelung_STANDARD         -0.160  -0.326                         
-    ## Region_PAYT_Nein                    0.113  -0.820                   0.214 
-    ##                            Factor7 Factor8
-    ## Flaeche                     0.750         
-    ## Bevoelkerung                              
-    ## Bevoelkerungsdichte        -0.719         
-    ## Inselgemeinde                             
-    ## Kuestengemeinde            -0.161         
-    ## Urbanisierungsgrad          0.421         
-    ## Geologischer_Indikator                    
-    ## Abfaelle_gesamt             0.104         
-    ## Abfaelle_sortiert                         
-    ## Abfaelle_unsortiert                       
-    ## Sortierungsgrad                     0.415 
-    ## Sort_Bio                            0.737 
-    ## Sort_Papier                               
-    ## Sort_Glas                          -0.124 
-    ## Sort_Holz                                 
-    ## Sort_Metall                        -0.135 
-    ## Sort_Plastik                              
-    ## Sort_Elektrik                      -0.104 
-    ## Sort_Textil                               
-    ## Sort_Rest                  -0.154  -0.133 
-    ## Verwendung_Energie                        
-    ## Verwendung_Deponie                        
-    ## Verwendung_Recycling                0.240 
-    ## Verwendung_Unbekannt                      
-    ## Steuern_gewerblich          0.150         
-    ## Steuern_privat                            
-    ## Kosten_Basis                              
-    ## Kosten_Sortierung                   0.139 
-    ## Kosten_sonstiges                   -0.123 
-    ## Gebuehrenregelung_STANDARD -0.179         
-    ## Region_PAYT_Nein           -0.124         
-    ## 
-    ##                Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-    ## SS loadings      5.009   3.676   3.613   1.719   1.487   1.465   1.447   0.918
-    ## Proportion Var   0.162   0.119   0.117   0.055   0.048   0.047   0.047   0.030
-    ## Cumulative Var   0.162   0.280   0.397   0.452   0.500   0.547   0.594   0.624
-    ## 
-    ## Factor Correlations:
-    ##         Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-    ## Factor1  1.0000  -0.144 -0.1568  0.2407  0.0574  0.2418  0.1896  0.1987
-    ## Factor2 -0.1443   1.000  0.1096  0.4444  0.4006 -0.2776 -0.1855  0.3961
-    ## Factor3 -0.1568   0.110  1.0000 -0.1541  0.2550 -0.0746  0.0913  0.1031
-    ## Factor4  0.2407   0.444 -0.1541  1.0000  0.2611 -0.2896 -0.0699  0.3070
-    ## Factor5  0.0574   0.401  0.2550  0.2611  1.0000 -0.2139  0.0155  0.2898
-    ## Factor6  0.2418  -0.278 -0.0746 -0.2896 -0.2139  1.0000 -0.1025 -0.0979
-    ## Factor7  0.1896  -0.186  0.0913 -0.0699  0.0155 -0.1025  1.0000 -0.2323
-    ## Factor8  0.1987   0.396  0.1031  0.3070  0.2898 -0.0979 -0.2323  1.0000
-    ## 
-    ## Test of the hypothesis that 8 factors are sufficient.
-    ## The chi square statistic is 32134.73 on 245 degrees of freedom.
-    ## The p-value is 0
+    > Factor Analysis results. Rotation method:  varimax 
+    >                  Factor1   Factor2    Factor3    Factor4    Factor5    Factor6   Factor7    Factor8
+    > SS loadings    5.2610066 4.2444729 2.44138763 1.72384330 1.47256995 1.37280645 1.1732074 1.16464260
+    > Proportion Var 0.1697099 0.1369185 0.07875444 0.05560785 0.04750226 0.04428408 0.0378454 0.03756912
+    > Cumulative Var 0.1697099 0.3066284 0.38538281 0.44099066 0.48849292 0.53277700 0.5706224 0.60819151
+    > 
+    > Factor Analysis results. Rotation method:  quartimax 
+    >                 Factor1   Factor2   Factor3    Factor4    Factor5    Factor6    Factor7    Factor8
+    > SS loadings    5.234070 4.2874095 3.2421891 1.63323928 1.33550736 1.32061310 1.06418814 0.73672055
+    > Proportion Var 0.168841 0.1383035 0.1045867 0.05268514 0.04308088 0.04260042 0.03432865 0.02376518
+    > Cumulative Var 0.168841 0.3071445 0.4117312 0.46441638 0.50749726 0.55009768 0.58442633 0.60819151
+    > 
+    > Factor Analysis results. Rotation method:  equamax 
+    >                  Factor1    Factor2    Factor3    Factor4    Factor5    Factor6    Factor7    Factor8
+    > SS loadings    4.3655683 2.98386425 2.56685359 1.97861328 1.90146322 1.89964245 1.72728661 1.43064514
+    > Proportion Var 0.1408248 0.09625369 0.08280173 0.06382623 0.06133752 0.06127879 0.05571892 0.04614984
+    > Cumulative Var 0.1408248 0.23707847 0.31988020 0.38370643 0.44504396 0.50632275 0.56204167 0.60819151
+    > 
+    > Factor Analysis results. Rotation method:  oblimin 
+    >                  Factor1   Factor2    Factor3   Factor4    Factor5    Factor6    Factor7    Factor8
+    > SS loadings    4.4392864 3.1764404 1.91389738 1.7342112 1.48349549 1.47791747 1.35006519 1.33639388
+    > Proportion Var 0.1432028 0.1024658 0.06173863 0.0559423 0.04785469 0.04767476 0.04355049 0.04310948
+    > Cumulative Var 0.1432028 0.2456686 0.30740723 0.3633495 0.41120422 0.45887898 0.50242947 0.54553895
+    > 
+    > Factor Analysis results. Rotation method:  promax 
+    >                  Factor1   Factor2   Factor3    Factor4    Factor5    Factor6    Factor7    Factor8
+    > SS loadings    5.0095282 3.6837302 3.6162284 1.71414002 1.48279727 1.45624130 1.44788215 0.91655944
+    > Proportion Var 0.1615977 0.1188300 0.1166525 0.05529484 0.04783217 0.04697553 0.04670588 0.02956643
+    > Cumulative Var 0.1615977 0.2804277 0.3970802 0.45237506 0.50020723 0.54718276 0.59388863 0.62345507
 
-62.3 % is the maximum amount of cumulative variance with 7 factors.
-Approximately 20 % less than what the PCA yielded. Therefore PCA will be
+0.6234551 % is the maximum amount of cumulative variance with 8 factors.
+Approximately 10 % less than what the PCA yielded. Therefore PCA will be
 used.
 
 ## Cluster Analysis
@@ -1237,7 +550,7 @@ used.
 To assess the clustering tendency of a data set the *Hopkins Statistic*
 can be used. It measures the probability that a given data set was
 generated by a uniform data distribution. The higher the resulting value
-the better the clustering tendency. Values range from 0 to 1.
+the better the clustering tendency. Values range from 0 to 1[^5].
 
 ``` r
 #wm_df_transformed_pca %>%
@@ -1271,22 +584,45 @@ clust_meth <- c("single",
 #' *...*
 ```
 
-The combination of *canberra* and *ward.D2* looks most promising.
+The combination of *Canberra* and *ward.D2* looks most promising.
 
 ``` r
 hclust_a <- 
   dist(scale(wm_df_transformed_pca), 
        method = "canberra") %>% 
   hclust(method = "ward.D2")
-
-ggdendrogram(hclust_a, leaf_labels = F, labels = F) +
-  labs(title = paste0("Distance: Canberra", "\nCluster: ward.D2"))
+ 
+hclust_a %>% plot
 ```
 
-![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](Exploratory_Data_Analysis_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
 
-4 or maybe for clusters seem to be viable options. Microsoft Excel can
-be used to comfortably compare clusters for profiling and help
+``` r
+# ggdendrogram(hclust_a, leaf_labels = F, labels = F) +
+#   labs(title = paste0("Distance: Canberra", "\nCluster: ward.D2"))
+```
+
+The amount of viable clusters seems to range from 2 to 7. Microsoft
+Excel can be used to comfortably compare clusters for profiling and help
 determining the number of clusters to choose.
 
-*EXCEL SCREENSHOT OR STH*
+**to be continued**
+
+[^1]: Municipal waste is all waste collected and treated by or for
+    municipalities. It includes waste from households, including bulky
+    waste, similar waste from trade and commerce, office buildings,
+    institutions and small businesses, as well as yard and garden waste,
+    street sweepings and the contents of waste containers. The
+    definition excludes waste from municipal sewage systems and their
+    treatment, as well as waste from construction and demolition work.
+
+[^2]: Reference:
+    <https://www.itl.nist.gov/div898/handbook/eda/section3/eda357.htm>
+
+[^3]: Reference:
+    <https://www.empirical-methods.hslu.ch/entscheidbaum/interdependenzanalyse/reduktion-der-variablen/faktoranalyse/>
+
+[^4]: Reference: <doi:10.1007/bf02289447>
+
+[^5]: Reference:
+    <https://www.datanovia.com/en/lessons/assessing-clustering-tendency/>
