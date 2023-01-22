@@ -301,10 +301,10 @@ psych::cortest.bartlett(cor(wm_df_prepped), n = 100)
 ```
 
     > $chisq
-    > [1] 2561.567
+    > [1] 2561.047
     > 
     > $p.value
-    > [1] 6.223596e-286
+    > [1] 7.701122e-286
     > 
     > $df
     > [1] 465
@@ -322,9 +322,9 @@ also consider .5 to be acceptable[^3].
 psych::KMO(wm_df_prepped)$MSA
 ```
 
-    > [1] 0.5681837
+    > [1] 0.5676481
 
-0.5681837 is not very good but I will consider this acceptable. Now the
+0.5676481 is not very good but I will consider this acceptable. Now the
 PCA can be executed.
 
 ``` r
@@ -338,22 +338,22 @@ wm_df_pca %>%
 ```
 
     > Importance of components:
-    >                          PC1    PC2     PC3     PC4     PC5     PC6     PC7     PC8
-    > Standard deviation     2.570 2.3613 1.59280 1.35028 1.25958 1.15616 1.03780 1.02152
-    > Proportion of Variance 0.213 0.1799 0.08184 0.05881 0.05118 0.04312 0.03474 0.03366
-    > Cumulative Proportion  0.213 0.3928 0.47469 0.53351 0.58469 0.62781 0.66255 0.69621
-    >                            PC9    PC10    PC11   PC12    PC13    PC14    PC15    PC16
-    > Standard deviation     0.96909 0.95514 0.91338 0.8820 0.85815 0.80261 0.79764 0.76415
-    > Proportion of Variance 0.03029 0.02943 0.02691 0.0251 0.02376 0.02078 0.02052 0.01884
-    > Cumulative Proportion  0.72651 0.75593 0.78285 0.8079 0.83170 0.85248 0.87300 0.89184
+    >                           PC1    PC2     PC3    PC4     PC5     PC6     PC7     PC8
+    > Standard deviation     2.5686 2.3601 1.59393 1.3512 1.25932 1.15609 1.03771 1.02230
+    > Proportion of Variance 0.2128 0.1797 0.08195 0.0589 0.05116 0.04311 0.03474 0.03371
+    > Cumulative Proportion  0.2128 0.3925 0.47447 0.5334 0.58452 0.62764 0.66237 0.69609
+    >                            PC9    PC10    PC11    PC12   PC13    PC14    PC15    PC16
+    > Standard deviation     0.96946 0.95616 0.91394 0.88242 0.8589 0.80276 0.79644 0.76424
+    > Proportion of Variance 0.03032 0.02949 0.02694 0.02512 0.0238 0.02079 0.02046 0.01884
+    > Cumulative Proportion  0.72640 0.75590 0.78284 0.80796 0.8317 0.85254 0.87300 0.89184
     >                           PC17    PC18    PC19    PC20    PC21    PC22    PC23    PC24
-    > Standard deviation     0.74092 0.69067 0.64901 0.60875 0.55887 0.54510 0.47323 0.45359
-    > Proportion of Variance 0.01771 0.01539 0.01359 0.01195 0.01008 0.00959 0.00722 0.00664
-    > Cumulative Proportion  0.90955 0.92493 0.93852 0.95048 0.96055 0.97014 0.97736 0.98400
+    > Standard deviation     0.74115 0.69009 0.64909 0.60811 0.55917 0.54521 0.47392 0.45181
+    > Proportion of Variance 0.01772 0.01536 0.01359 0.01193 0.01009 0.00959 0.00725 0.00658
+    > Cumulative Proportion  0.90956 0.92492 0.93852 0.95044 0.96053 0.97012 0.97736 0.98395
     >                           PC25    PC26    PC27    PC28    PC29    PC30    PC31
-    > Standard deviation     0.43180 0.39066 0.32430 0.17297 0.09748 0.08771 0.06888
-    > Proportion of Variance 0.00601 0.00492 0.00339 0.00097 0.00031 0.00025 0.00015
-    > Cumulative Proportion  0.99001 0.99493 0.99833 0.99929 0.99960 0.99985 1.00000
+    > Standard deviation     0.43253 0.39176 0.32432 0.17296 0.09736 0.08770 0.06888
+    > Proportion of Variance 0.00603 0.00495 0.00339 0.00096 0.00031 0.00025 0.00015
+    > Cumulative Proportion  0.98998 0.99494 0.99833 0.99929 0.99960 0.99985 1.00000
 
 Taking a look at the first 15 principal components (PC) and the
 percentage of variance they explain.
@@ -381,17 +381,17 @@ factoextra::get_eig(wm_df_pca) %>%
 ```
 
     >       eigenvalue variance.percent cumulative.variance.percent
-    > Dim.1   6.602957        21.299860                    21.29986
-    > Dim.2   5.575540        17.985612                    39.28547
-    > Dim.3   2.537017         8.183926                    47.46940
-    > Dim.4   1.823250         5.881452                    53.35085
-    > Dim.5   1.586554         5.117915                    58.46876
-    > Dim.6   1.336699         4.311933                    62.78070
-    > Dim.7   1.077024         3.474270                    66.25497
-    > Dim.8   1.043493         3.366107                    69.62107
+    > Dim.1   6.597706        21.282924                    21.28292
+    > Dim.2   5.570200        17.968387                    39.25131
+    > Dim.3   2.540597         8.195475                    47.44679
+    > Dim.4   1.825792         5.889653                    53.33644
+    > Dim.5   1.585895         5.115790                    58.45223
+    > Dim.6   1.336539         4.311415                    62.76364
+    > Dim.7   1.076833         3.473654                    66.23730
+    > Dim.8   1.045094         3.371272                    69.60857
 
 8 factors possess eigenvalues above 1 with a cumulative variance of
-69.62 %.
+69.61 %.
 
 ``` r
 get_eig(wm_df_pca)[1:15,] %>% 
@@ -435,19 +435,19 @@ wm_df_prepped %>%
     > Component   Adjusted    Unadjusted    Estimated 
     >             Eigenvalue  Eigenvalue    Bias 
     > -------------------------------------------------- 
-    > 1           6.445954    6.602956      0.157002
-    > 2           5.437261    5.575539      0.138278
-    > 3           2.413120    2.537016      0.123896
-    > 4           1.711981    1.823250      0.111268
-    > 5           1.487124    1.586553      0.099429
-    > 6           1.248018    1.336699      0.088680
+    > 1           6.439941    6.597706      0.157765
+    > 2           5.431598    5.570200      0.138601
+    > 3           2.416818    2.540597      0.123778
+    > 4           1.714614    1.825792      0.111177
+    > 5           1.486536    1.585894      0.099358
+    > 6           1.248106    1.336538      0.088432
     > -------------------------------------------------- 
     > 
     > Adjusted eigenvalues > 1 indicate dimensions to retain.
     > (6 components retained)
 
 *Horn’s Method* suggests a number of 6 PCs to keep. I chose to keep 8
-with approximately 69.62 % cumulative variance. Next, we take a look at
+with approximately 69.61 % cumulative variance. Next, we take a look at
 the contributions of the original variables to each new PC.
 
 ``` r
@@ -458,7 +458,7 @@ for (i in 1:n_PCs) {
 }
 ```
 
-![](ReadMe_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->![](ReadMe_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->![](ReadMe_files/figure-gfm/unnamed-chunk-19-3.png)<!-- -->![](ReadMe_files/figure-gfm/unnamed-chunk-19-4.png)<!-- -->![](ReadMe_files/figure-gfm/unnamed-chunk-19-5.png)<!-- -->![](ReadMe_files/figure-gfm/unnamed-chunk-19-6.png)<!-- -->![](ReadMe_files/figure-gfm/unnamed-chunk-19-7.png)<!-- -->![](ReadMe_files/figure-gfm/unnamed-chunk-19-8.png)<!-- -->
+![](ReadMe_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 The *psych* package comes with a function that can illustrate the
 contribution of each original variable to the PCs in one plot.
@@ -512,36 +512,36 @@ for (rm in rot_meth) {
 ```
 
     > Factor Analysis results. Rotation method:  varimax 
-    >                  Factor1   Factor2    Factor3    Factor4    Factor5    Factor6    Factor7    Factor8
-    > SS loadings    5.2607746 4.2287000 2.43052260 1.72826291 1.47359024 1.37847551 1.17822038 1.16547812
-    > Proportion Var 0.1697024 0.1364097 0.07840395 0.05575042 0.04753517 0.04446695 0.03800711 0.03759607
-    > Cumulative Var 0.1697024 0.3061121 0.38451604 0.44026645 0.48780162 0.53226857 0.57027568 0.60787175
+    >                  Factor1   Factor2    Factor3    Factor4    Factor5    Factor6   Factor7    Factor8
+    > SS loadings    5.2611890 4.2162158 2.43124239 1.73061396 1.47272740 1.38197945 1.1766948 1.16858818
+    > Proportion Var 0.1697158 0.1360070 0.07842717 0.05582626 0.04750734 0.04457998 0.0379579 0.03769639
+    > Cumulative Var 0.1697158 0.3057227 0.38414991 0.43997617 0.48748350 0.53206348 0.5700214 0.60771777
     > 
     > Factor Analysis results. Rotation method:  quartimax 
-    >                  Factor1   Factor2   Factor3   Factor4    Factor5    Factor6    Factor7    Factor8
-    > SS loadings    5.2336410 4.2618672 3.2382733 1.6385918 1.33585354 1.32215258 1.07558474 0.73806015
-    > Proportion Var 0.1688271 0.1374796 0.1044604 0.0528578 0.04309205 0.04265008 0.03469628 0.02380839
-    > Cumulative Var 0.1688271 0.3063067 0.4107671 0.4636249 0.50671700 0.54936708 0.58406336 0.60787175
+    >                 Factor1   Factor2   Factor3    Factor4    Factor5    Factor6    Factor7    Factor8
+    > SS loadings    5.234009 4.2420000 3.2360085 1.64195764 1.33474382 1.32226242 1.08838159 0.73988800
+    > Proportion Var 0.168839 0.1368387 0.1043874 0.05296638 0.04305625 0.04265363 0.03510908 0.02386735
+    > Cumulative Var 0.168839 0.3056777 0.4100651 0.46303146 0.50608771 0.54874134 0.58385042 0.60771777
     > 
     > Factor Analysis results. Rotation method:  equamax 
-    >                  Factor1    Factor2   Factor3    Factor4    Factor5    Factor6    Factor7    Factor8
-    > SS loadings    4.3640095 2.96459587 2.5646642 1.98563488 1.90344779 1.90066735 1.72486657 1.43613813
-    > Proportion Var 0.1407745 0.09563212 0.0827311 0.06405274 0.06140154 0.06131185 0.05564086 0.04632704
-    > Cumulative Var 0.1407745 0.23640663 0.3191377 0.38319047 0.44459201 0.50590386 0.56154472 0.60787175
+    >                  Factor1    Factor2    Factor3    Factor4   Factor5    Factor6    Factor7    Factor8
+    > SS loadings    4.3613843 2.95869154 2.56321140 1.98795414 1.9042557 1.90138056 1.72317550 1.43919787
+    > Proportion Var 0.1406898 0.09544166 0.08268424 0.06412755 0.0614276 0.06133486 0.05558631 0.04642574
+    > Cumulative Var 0.1406898 0.23613148 0.31881572 0.38294327 0.4443709 0.50570573 0.56129204 0.60771777
     > 
     > Factor Analysis results. Rotation method:  oblimin 
     >                  Factor1   Factor2    Factor3    Factor4    Factor5    Factor6    Factor7    Factor8
-    > SS loadings    4.4365790 3.1527118 1.91293751 1.73719691 1.48097560 1.48047901 1.35849230 1.33867097
-    > Proportion Var 0.1431155 0.1017004 0.06170766 0.05603861 0.04777341 0.04775739 0.04382233 0.04318293
-    > Cumulative Var 0.1431155 0.2448158 0.30652349 0.36256210 0.41033551 0.45809290 0.50191523 0.54509816
+    > SS loadings    4.4333756 3.1363599 1.91260898 1.73922860 1.48201583 1.48142710 1.36642175 1.33977209
+    > Proportion Var 0.1430121 0.1011729 0.06169706 0.05610415 0.04780696 0.04778797 0.04407812 0.04321845
+    > Cumulative Var 0.1430121 0.2441850 0.30588208 0.36198623 0.40979319 0.45758116 0.50165928 0.54487774
     > 
     > Factor Analysis results. Rotation method:  promax 
-    >                  Factor1   Factor2   Factor3   Factor4    Factor5    Factor6    Factor7   Factor8
-    > SS loadings    5.0064770 3.6418809 3.6183498 1.7211666 1.49360627 1.45411729 1.44844733 0.9130366
-    > Proportion Var 0.1614993 0.1174800 0.1167210 0.0555215 0.04818085 0.04690701 0.04672411 0.0294528
-    > Cumulative Var 0.1614993 0.2789793 0.3957002 0.4512217 0.49940260 0.54630961 0.59303371 0.6224865
+    >                  Factor1   Factor2   Factor3    Factor4    Factor5    Factor6    Factor7    Factor8
+    > SS loadings    5.0056292 3.6362613 3.6135294 1.72303154 1.50016567 1.46091163 1.44619926 0.91448483
+    > Proportion Var 0.1614719 0.1172988 0.1165655 0.05558166 0.04839244 0.04712618 0.04665159 0.02949951
+    > Cumulative Var 0.1614719 0.2787707 0.3953361 0.45091779 0.49931023 0.54643641 0.59308800 0.62258751
 
-0.6224865 % is the maximum amount of cumulative variance with 8 factors.
+0.6225875 % is the maximum amount of cumulative variance with 8 factors.
 Approximately 10 % less than what the PCA yielded. Therefore PCA will be
 used.
 
