@@ -532,305 +532,71 @@ The factors the FA puts out might be correlated, so a rotation can be used in ma
 First, a vector containing all rotation methods is created. Then we iterate over each of them using a for-loop.
 
 ```r
-rot_meth <- c("varimax", "quartimax", "equamax", "oblimin", "oblimax", "promax")
-
+rot_meth <- c("varimax",
+              "quartimax",
+              "equamax",
+              "oblimin",
+              "promax")
+max_cumvar <- 0
 for (rm in rot_meth) {
-  invisible(
-    readline(
-      prompt=paste0("[enter] to show next rotation result")))
-  cat("Factor Analysis results. Rotation method: ", rm)
-  wm_df_prepped %>% factanal(factors = n_PCs,
-                             rotation = rm,
-                             lower = 0.01) %>% 
-    print
+  cat("Factor Analysis results. Rotation method: ", rm, "\n")
+  res <- factanal(wm_df_prepped,
+                  factors = n_PCs,
+                  rotation = rm,
+                  lower = 0.1) %>% 
+    steffanossaR::ex_factanal()
+  if (res[3,n_PCs] > max_cumvar & res[3,n_PCs] <= 1) {max_cumvar <- res[3,n_PCs]}
+  print(res)
+  cat("\n")
 }
 ```
+
 <details>
   <summary>(<i>click to show/hide console output</i>)</summary>
   <!-- have to be followed by an empty line! -->
 
 ```
-Factor Analysis results. Rotation method:  varimax
-Loadings:
-                           Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-Flaeche                                                     0.723                         
-Bevoelkerung                0.964                                                         
-Bevoelkerungsdichte         0.651                          -0.670                         
-Inselgemeinde                                                                             
-Kuestengemeinde                                     0.322                                 
-Urbanisierungsgrad         -0.725                           0.384                         
-Geologischer_Indikator              0.892                                                 
-Abfaelle_gesamt             0.959                                                         
-Abfaelle_sortiert           0.943                                                         
-Abfaelle_unsortiert         0.880                                                         
-Sortierungsgrad            -0.314   0.319   0.630                           0.526         
-Sort_Bio                   -0.402           0.350                           0.768         
-Sort_Papier                                 0.448                                         
-Sort_Glas                  -0.316           0.411                                         
-Sort_Holz                           0.651                                                 
-Sort_Metall                         0.438   0.371                                         
-Sort_Plastik                                0.547                                         
-Sort_Elektrik                               0.372                                         
-Sort_Textil                                                                               
-Sort_Rest                           0.494                                                 
-Verwendung_Energie                  0.412                                          -0.800 
-Verwendung_Deponie                 -0.508                           0.623           0.449 
-Verwendung_Recycling                0.419   0.595                           0.351         
-Verwendung_Unbekannt                                               -0.867                 
-Steuern_gewerblich         -0.314  -0.331           0.341                                 
-Steuern_privat                      0.805                                                 
-Kosten_Basis                                        0.897                                 
-Kosten_Sortierung                                   0.460                                 
-Kosten_sonstiges                           -0.423   0.509                                 
-Gebuehrenregelung_STANDARD         -0.325                                                 
-Region_PAYT_Nein                   -0.807                                                 
+Factor Analysis results. Rotation method:  varimax 
+                 Factor1   Factor2    Factor3    Factor4    Factor5    Factor6    Factor7    Factor8
+SS loadings    5.2625797 4.2328943 2.42322412 1.72548638 1.47297756 1.38332617 1.17507304 1.16537813
+Proportion Var 0.1697606 0.1365450 0.07816852 0.05566085 0.04751541 0.04462342 0.03790558 0.03759284
+Cumulative Var 0.1697606 0.3063056 0.38447413 0.44013498 0.48765039 0.53227381 0.57017939 0.60777224
 
-               Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-SS loadings      5.262   4.226   2.422   1.731   1.474   1.381   1.179   1.173
-Proportion Var   0.170   0.136   0.078   0.056   0.048   0.045   0.038   0.038
-Cumulative Var   0.170   0.306   0.384   0.440   0.488   0.532   0.570   0.608
-[enter] to show next rotation result
-Factor Analysis results. Rotation method:  quartimax
-Loadings:
-                           Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-Flaeche                                                     0.681                         
-Bevoelkerung                0.967                                                         
-Bevoelkerungsdichte         0.600                          -0.701                         
-Inselgemeinde                                                                             
-Kuestengemeinde                    -0.311                                                 
-Urbanisierungsgrad         -0.695                           0.428                         
-Geologischer_Indikator              0.908                                                 
-Abfaelle_gesamt             0.969                                                         
-Abfaelle_sortiert           0.957                                                         
-Abfaelle_unsortiert         0.883                                                         
-Sortierungsgrad            -0.301           0.865                                         
-Sort_Bio                   -0.405           0.806                                  -0.300 
-Sort_Papier                                 0.343                                         
-Sort_Glas                  -0.303                                                   0.328 
-Sort_Holz                           0.633                                                 
-Sort_Metall                         0.406                                           0.305 
-Sort_Plastik                                0.440                                   0.315 
-Sort_Elektrik                                                                             
-Sort_Textil                                                                               
-Sort_Rest                           0.488                                                 
-Verwendung_Energie                  0.479                                  -0.791         
-Verwendung_Deponie                 -0.543                          -0.645   0.390         
-Verwendung_Recycling                0.343   0.723                                         
-Verwendung_Unbekannt                       -0.352                   0.838                 
-Steuern_gewerblich                 -0.352           0.327                                 
-Steuern_privat                      0.801                                                 
-Kosten_Basis                                        0.897                                 
-Kosten_Sortierung                                   0.422                                 
-Kosten_sonstiges                           -0.438   0.539                                 
-Gebuehrenregelung_STANDARD         -0.305                                                 
-Region_PAYT_Nein                   -0.833                                                 
+Factor Analysis results. Rotation method:  quartimax 
+                 Factor1   Factor2   Factor3    Factor4    Factor5    Factor6    Factor7    Factor8
+SS loadings    5.2353602 4.2656853 3.2294537 1.63627033 1.33552917 1.32646255 1.07282139 0.73935672
+Proportion Var 0.1688826 0.1376028 0.1041759 0.05278291 0.04308159 0.04278911 0.03460714 0.02385022
+Cumulative Var 0.1688826 0.3064853 0.4106613 0.46344418 0.50652577 0.54931488 0.58392202 0.60777224
 
-               Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-SS loadings      5.235   4.254   3.229   1.642   1.335   1.321   1.091   0.741
-Proportion Var   0.169   0.137   0.104   0.053   0.043   0.043   0.035   0.024
-Cumulative Var   0.169   0.306   0.410   0.463   0.506   0.549   0.584   0.608
-[enter] to show next rotation result
-Factor Analysis results. Rotation method:  equamax
-Loadings:
-                           Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-Flaeche                     0.445                                  -0.585                 
-Bevoelkerung                0.914                                                         
-Bevoelkerungsdichte         0.394                                   0.845                 
-Inselgemeinde                                                                             
-Kuestengemeinde                                             0.321                         
-Urbanisierungsgrad         -0.549                                  -0.602                 
-Geologischer_Indikator              0.822          -0.326                                 
-Abfaelle_gesamt             0.920                                                         
-Abfaelle_sortiert           0.914                                                         
-Abfaelle_unsortiert         0.820          -0.324                                         
-Sortierungsgrad                             0.785                           0.403         
-Sort_Bio                                    0.888                                         
-Sort_Papier                                                                 0.415         
-Sort_Glas                                                                   0.382         
-Sort_Holz                           0.558                                                 
-Sort_Metall                         0.309                                   0.439         
-Sort_Plastik                                                                0.425         
-Sort_Elektrik                                                               0.399         
-Sort_Textil                                                                               
-Sort_Rest                           0.342          -0.341                   0.340         
-Verwendung_Energie                                 -0.894                                 
-Verwendung_Deponie                 -0.322           0.584                           0.613 
-Verwendung_Recycling                        0.614                           0.478         
-Verwendung_Unbekannt                                                               -0.880 
-Steuern_gewerblich                 -0.311                   0.343                         
-Steuern_privat                      0.769                                                 
-Kosten_Basis                                                0.918                         
-Kosten_Sortierung                                           0.421                         
-Kosten_sonstiges                           -0.318           0.569                         
-Gebuehrenregelung_STANDARD                                                                
-Region_PAYT_Nein                   -0.725           0.439                                 
+Factor Analysis results. Rotation method:  equamax 
+                 Factor1    Factor2    Factor3    Factor4    Factor5    Factor6    Factor7    Factor8
+SS loadings    4.3643577 2.96040826 2.56451685 1.98772753 1.90141196 1.90019869 1.72378435 1.43853404
+Proportion Var 0.1407857 0.09549704 0.08272635 0.06412024 0.06133587 0.06129673 0.05560595 0.04640432
+Cumulative Var 0.1407857 0.23628277 0.31900912 0.38312937 0.44446524 0.50576197 0.56136791 0.60777224
 
-               Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-SS loadings      4.362   2.971   2.562   1.984   1.904   1.903   1.723   1.438
-Proportion Var   0.141   0.096   0.083   0.064   0.061   0.061   0.056   0.046
-Cumulative Var   0.141   0.237   0.319   0.383   0.445   0.506   0.562   0.608
-[enter] to show next rotation result
-Factor Analysis results. Rotation method:  oblimin
-Loadings:
-                           Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-Flaeche                     0.502                          -0.688                         
-Bevoelkerung                0.944                                                         
-Bevoelkerungsdichte         0.365                           0.771                         
-Inselgemeinde                                                                             
-Kuestengemeinde                                     0.302                                 
-Urbanisierungsgrad         -0.536                          -0.491                         
-Geologischer_Indikator              0.879                                                 
-Abfaelle_gesamt             0.940                                                         
-Abfaelle_sortiert           0.936                                                         
-Abfaelle_unsortiert         0.832                                                         
-Sortierungsgrad                             0.690                                         
-Sort_Bio                                    0.962                                         
-Sort_Papier                                                         0.399                 
-Sort_Glas                                                           0.425                 
-Sort_Holz                           0.587                                                 
-Sort_Metall                         0.302                           0.415                 
-Sort_Plastik                                                        0.466                 
-Sort_Elektrik                                                       0.399                 
-Sort_Textil                                                                               
-Sort_Rest                           0.324                           0.309                 
-Verwendung_Energie                                                         -0.902         
-Verwendung_Deponie                                                          0.417   0.707 
-Verwendung_Recycling                        0.486                   0.391                 
-Verwendung_Unbekannt                                                        0.311  -0.820 
-Steuern_gewerblich                 -0.311           0.307                                 
-Steuern_privat                      0.831                                                 
-Kosten_Basis                                        0.953                                 
-Kosten_Sortierung                                   0.447                                 
-Kosten_sonstiges                                    0.563                                 
-Gebuehrenregelung_STANDARD         -0.307                                                 
-Region_PAYT_Nein                   -0.749                                                 
+Factor Analysis results. Rotation method:  oblimin 
+                 Factor1   Factor2    Factor3    Factor4  Factor5   Factor6    Factor7   Factor8
+SS loadings    4.4381552 3.1541391 1.91135844 1.73505742 1.480126 1.4767935 1.35825449 1.3417234
+Proportion Var 0.1431663 0.1017464 0.06165672 0.05596959 0.047746 0.0476385 0.04381466 0.0432814
+Cumulative Var 0.1431663 0.2449127 0.30656944 0.36253904 0.410285 0.4579235 0.50173820 0.5450196
 
-               Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-SS loadings      4.435   3.144   1.911   1.739   1.483   1.482   1.367   1.338
-Proportion Var   0.143   0.101   0.062   0.056   0.048   0.048   0.044   0.043
-Cumulative Var   0.143   0.244   0.306   0.362   0.410   0.458   0.502   0.545
-[enter] to show next rotation result
-Factor Analysis results. Rotation method:  oblimax
-Loadings:
-                           Factor1       Factor2       Factor3       Factor4       Factor5       Factor6       Factor7      
-Flaeche                     31004397.591  31004396.902                                                                      
-Bevoelkerung                  758701.705    758701.572         0.731                       0.490                            
-Bevoelkerungsdichte        -31729080.429 -31729079.858         0.644                       0.595                            
-Inselgemeinde               -2187807.682  -2187807.710                                                                      
-Kuestengemeinde             -7400365.810  -7400366.192                                                                      
-Urbanisierungsgrad          19259164.536  19259164.220        -0.646                      -0.531                            
-Geologischer_Indikator       -186963.759   -186962.688         0.484        -0.307                                          
-Abfaelle_gesamt              2375950.274   2375950.207         0.778                       0.488                            
-Abfaelle_sortiert            2022215.383   2022215.400         0.794                       0.486                            
-Abfaelle_unsortiert          2006577.555   2006577.350         0.668                       0.437                            
-Sortierungsgrad             -1034425.470  -1034424.974                       0.412                       0.300              
-Sort_Bio                      713676.468    713676.725        -0.341         0.442                       0.398              
-Sort_Papier                   590593.238    590593.286         0.386         0.315                                          
-Sort_Glas                     426189.259    426189.296        -0.350                                                        
-Sort_Holz                   -3014097.254  -3014096.538         0.547                                                        
-Sort_Metall                  1305037.246   1305037.729                                                                      
-Sort_Plastik                  491880.015    491879.924                                                                      
-Sort_Elektrik                3989953.810   3989954.015                                                                      
-Sort_Textil                 -1338761.453  -1338761.432                                                                      
-Sort_Rest                   -6259919.620  -6259918.927                                                                      
-Verwendung_Energie           -527496.379   -527495.513                                     0.416        -0.728              
-Verwendung_Deponie           3291301.220   3291300.101                       0.808        -0.416                            
-Verwendung_Recycling        -2087343.065  -2087342.488                                                                      
-Verwendung_Unbekannt         -698554.187   -698554.158                      -1.040                       0.550              
-Steuern_gewerblich           7026936.527   7026936.098        -0.458                                                        
-Steuern_privat              -1658103.331  -1658102.411         0.658                                                        
-Kosten_Basis                  686585.959    686585.662                                                                 0.855
-Kosten_Sortierung            2389489.034   2389488.906                                                                 0.429
-Kosten_sonstiges             -765509.933   -765510.228                                                                 0.473
-Gebuehrenregelung_STANDARD  -7508841.536  -7508841.800                                                                      
-Region_PAYT_Nein            -5551244.994  -5551245.932        -0.435                                                        
-                           Factor8      
-Flaeche                            0.331
-Bevoelkerung                            
-Bevoelkerungsdichte                     
-Inselgemeinde                           
-Kuestengemeinde                         
-Urbanisierungsgrad                      
-Geologischer_Indikator                  
-Abfaelle_gesamt                         
-Abfaelle_sortiert                  0.318
-Abfaelle_unsortiert                     
-Sortierungsgrad                         
-Sort_Bio                          -0.433
-Sort_Papier                             
-Sort_Glas                               
-Sort_Holz                               
-Sort_Metall                             
-Sort_Plastik                       0.342
-Sort_Elektrik                           
-Sort_Textil                             
-Sort_Rest                               
-Verwendung_Energie                      
-Verwendung_Deponie                      
-Verwendung_Recycling                    
-Verwendung_Unbekannt                    
-Steuern_gewerblich                      
-Steuern_privat                          
-Kosten_Basis                            
-Kosten_Sortierung                       
-Kosten_sonstiges                        
-Gebuehrenregelung_STANDARD              
-Region_PAYT_Nein                        
-
-                    Factor1      Factor2      Factor3      Factor4      Factor5      Factor6      Factor7      Factor8
-SS loadings    2.644933e+15 2.644933e+15 5.016000e+00 2.671000e+00 2.109000e+00 1.740000e+00 1.424000e+00 1.216000e+00
-Proportion Var 8.532043e+13 8.532043e+13 1.620000e-01 8.600000e-02 6.800000e-02 5.600000e-02 4.600000e-02 3.900000e-02
-Cumulative Var 8.532043e+13 1.706409e+14 1.706409e+14 1.706409e+14 1.706409e+14 1.706409e+14 1.706409e+14 1.706409e+14
-[enter] to show next rotation result
-Factor Analysis results. Rotation method:  promax
-Loadings:
-                           Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-Flaeche                     0.436                                           0.749         
-Bevoelkerung                1.004                                                         
-Bevoelkerungsdichte         0.474                                          -0.720         
-Inselgemeinde                                                                             
-Kuestengemeinde                                                                           
-Urbanisierungsgrad         -0.626                                           0.421         
-Geologischer_Indikator                      0.965                                         
-Abfaelle_gesamt             0.993                                                         
-Abfaelle_sortiert           0.995                                                         
-Abfaelle_unsortiert         0.870                                                         
-Sortierungsgrad                     0.866                                           0.414 
-Sort_Bio                            0.677                                           0.735 
-Sort_Papier                         0.467                           0.326                 
-Sort_Glas                           0.405                                                 
-Sort_Holz                                   0.585                                         
-Sort_Metall                         0.370                                                 
-Sort_Plastik                        0.632  -0.370                                         
-Sort_Elektrik                       0.392                                                 
-Sort_Textil                                                                               
-Sort_Rest                                   0.305                                         
-Verwendung_Energie                                                 -0.945                 
-Verwendung_Deponie                         -0.324           0.639   0.404                 
-Verwendung_Recycling                0.785                                                 
-Verwendung_Unbekannt                                       -0.926   0.339                 
-Steuern_gewerblich                                                                        
-Steuern_privat                              0.903                                         
-Kosten_Basis                                        0.971                                 
-Kosten_Sortierung                   0.379           0.472                                 
-Kosten_sonstiges                   -0.443           0.540                                 
-Gebuehrenregelung_STANDARD                 -0.323                                         
-Region_PAYT_Nein                           -0.818                                         
-
-               Factor1 Factor2 Factor3 Factor4 Factor5 Factor6 Factor7 Factor8
-SS loadings      5.007   3.625   3.624   1.723   1.497   1.463   1.448   0.913
-Proportion Var   0.162   0.117   0.117   0.056   0.048   0.047   0.047   0.029
-Cumulative Var   0.162   0.278   0.395   0.451   0.499   0.546   0.593   0.623
+Factor Analysis results. Rotation method:  promax 
+                Factor1   Factor2   Factor3   Factor4    Factor5    Factor6    Factor7    Factor8
+SS loadings    5.009074 3.6273221 3.6242156 1.7168483 1.49714828 1.44777655 1.44589770 0.91053167
+Proportion Var 0.161583 0.1170104 0.1169102 0.0553822 0.04829511 0.04670247 0.04664186 0.02937199
+Cumulative Var 0.161583 0.2785934 0.3955036 0.4508858 0.49918090 0.54588337 0.59252523 0.62189722
 ```
 </details>
 
-62.3 % (promax rotation) is the maximum amount of cumulative variance with 8 factors. Approximately 10 % less than what the PCA yielded.
+62.22 % (promax rotation) is the maximum amount of cumulative variance with 8 factors. Approximately 10 % less than what the PCA yielded.
 Additionally, the loading are ambiguous. PCA will be used.
 
 ## Cluster Analysis
 
 To assess the clustering tendency of a data set the *Hopkins Statistic* can be used. It measures the probability that a given data set was generated by a uniform data distribution. The higher the resulting value the better the clustering tendency. Values range from 0 to 1[^4].
+
 [^4]: Reference: https://www.datanovia.com/en/lessons/assessing-clustering-tendency/
+
 ```r
 wm_df_transformed_pca %>%
   get_clust_tendency(n = nrow(wm_df_transformed_pca) - 1, graph = F)
@@ -848,7 +614,7 @@ NULL
 ```
 </details>
 
-~ 0.779 is quite good.
+~ 0.8309 is quite good.
 
 ### Hierarchical Clustering: Agglomerative Methods
 
