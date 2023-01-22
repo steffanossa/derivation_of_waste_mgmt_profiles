@@ -5,7 +5,7 @@ last-modified
 
 ## Todos:
 
-- [ ] references: \~bartlett test\~, <sub>kmo</sub>, pca, fa
+- [ ] references: ~bartlett~, ~test~, kmo, pca, fa
 - [ ] clustering: diana, mona, agnes, k-means
 - [ ] profiling
 - [ ] output code
@@ -42,6 +42,11 @@ wm_df <- load2("data/waste_management.RData")
 skimr::skim(wm_df)
 ```
 
+<details>
+  <summary>(<i>click to show/hide console output</i>)</summary>
+  <!-- have to be followed by an empty line! -->
+
+```
 |                                                  |       |
 |:-------------------------------------------------|:------|
 | Name                                             | wm_df |
@@ -101,7 +106,9 @@ Data summary
 | Kosten_Basis           |         0 |          1.00 |   154.24 |    76.07 |   25.69 |   108.04 |   136.62 |   179.16 |     977.42 | ▇▁▁▁▁ |
 | Kosten_Sortierung      |        67 |          0.98 |    52.68 |    33.06 |    3.39 |    31.25 |    48.88 |    66.44 |     582.16 | ▇▁▁▁▁ |
 | Kosten_sonstiges       |        52 |          0.99 |    54.18 |    43.19 |    4.27 |    27.34 |    41.69 |    66.49 |     670.32 | ▇▁▁▁▁ |
-
+```
+</details>
+  
 ``` r
 wm_df %>% complete.cases() %>% sum()
 ```
@@ -203,6 +210,11 @@ sapply(wm_df[,16:25],
          NA_Count = .)
 ```
 
+<details>
+  <summary>(<i>click to show/hide console output</i>)</summary>
+  <!-- have to be followed by an empty line! -->
+
+```
     > # A tibble: 10 × 2
     >    Column          NA_Count
     >    <chr>              <int>
@@ -216,6 +228,8 @@ sapply(wm_df[,16:25],
     >  8 Sort_Elektrik        314
     >  9 Sort_Textil         1013
     > 10 Sort_Rest            136
+```
+</details>    
 
 ``` r
 options(width = 200)
@@ -231,12 +245,19 @@ Sort_NAs_table[1:5] %>% names %>% as.numeric -> t
 wm_df[t,16:25]
 ```
 
+<details>
+  <summary>(<i>click to show/hide console output</i>)</summary>
+  <!-- have to be followed by an empty line! -->
+
+```
     >      Sortierungsgrad Sort_Bio Sort_Papier Sort_Glas Sort_Holz Sort_Metall Sort_Plastik Sort_Elektrik Sort_Textil Sort_Rest
     > 429             0.72       NA        0.72        NA        NA          NA           NA            NA          NA        NA
     > 3572            0.70       NA          NA        NA        NA          NA           NA           0.7          NA        NA
     > 4175            0.00       NA          NA        NA        NA          NA           NA           0.0          NA        NA
     > 3777           59.32       NA          NA     39.84        NA          NA           NA            NA          NA     19.48
     > 4017            1.87       NA          NA        NA        NA          NA         0.62            NA          NA      1.25
+```
+</details>
 
 Looks like the sum of the values present in these waste sorting columns
 equals the value in *Sortierungsgrad*. Imputing any values here would
@@ -300,6 +321,11 @@ concluded, that the variables are correlated[^2].
 psych::cortest.bartlett(cor(wm_df_prepped), n = 100)
 ```
 
+<details>
+  <summary>(<i>click to show/hide console output</i>)</summary>
+  <!-- have to be followed by an empty line! -->
+
+```
     > $chisq
     > [1] 2565.637
     > 
@@ -308,6 +334,8 @@ psych::cortest.bartlett(cor(wm_df_prepped), n = 100)
     > 
     > $df
     > [1] 465
+```
+</details> 
 
 The value is way below 0.05, there is correlation between the dimensions
 of the data set.
@@ -337,6 +365,11 @@ wm_df_pca %>%
   summary()
 ```
 
+<details>
+  <summary>(<i>click to show/hide console output</i>)</summary>
+  <!-- have to be followed by an empty line! -->
+
+```
     > Importance of components:
     >                           PC1    PC2     PC3     PC4     PC5     PC6     PC7     PC8
     > Standard deviation     2.5707 2.3633 1.59185 1.34810 1.25994 1.15636 1.03757 1.02094
@@ -354,7 +387,9 @@ wm_df_pca %>%
     > Standard deviation     0.43012 0.38299 0.32422 0.17291 0.09760 0.08770 0.06890
     > Proportion of Variance 0.00597 0.00473 0.00339 0.00096 0.00031 0.00025 0.00015
     > Cumulative Proportion  0.99020 0.99494 0.99833 0.99929 0.99960 0.99985 1.00000
-
+```
+</details>
+    
 Taking a look at the first 15 principal components (PC) and the
 percentage of variance they explain.
 
@@ -380,6 +415,11 @@ factoextra::get_eig(wm_df_pca) %>%
   filter(eigenvalue > 1)
 ```
 
+<details>
+  <summary>(<i>click to show/hide console output</i>)</summary>
+  <!-- have to be followed by an empty line! -->
+
+```
     >       eigenvalue variance.percent cumulative.variance.percent
     > Dim.1   6.608536        21.317857                    21.31786
     > Dim.2   5.585121        18.016521                    39.33438
@@ -389,7 +429,9 @@ factoextra::get_eig(wm_df_pca) %>%
     > Dim.6   1.337160         4.313419                    62.80522
     > Dim.7   1.076543         3.472720                    66.27794
     > Dim.8   1.042319         3.362319                    69.64026
-
+```
+</details>
+    
 8 factors possess eigenvalues above 1 with a cumulative variance of
 69.64 %.
 
@@ -423,6 +465,11 @@ wm_df_prepped %>%
   paran::paran()
 ```
 
+<details>
+  <summary>(<i>click to show/hide console output</i>)</summary>
+  <!-- have to be followed by an empty line! -->
+
+```
     > 
     > Using eigendecomposition of correlation matrix.
     > Computing: 10%  20%  30%  40%  50%  60%  70%  80%  90%  100%
@@ -445,7 +492,9 @@ wm_df_prepped %>%
     > 
     > Adjusted eigenvalues > 1 indicate dimensions to retain.
     > (6 components retained)
-
+```
+</details>
+    
 *Horn’s Method* suggests a number of 6 PCs to keep. I chose to keep 8
 with approximately 69.64 % cumulative variance. Next, we take a look at
 the contributions of the original variables to each new PC.
@@ -511,6 +560,11 @@ for (rm in rot_meth) {
 }
 ```
 
+<details>
+  <summary>(<i>click to show/hide console output</i>)</summary>
+  <!-- have to be followed by an empty line! -->
+
+```
     > Factor Analysis results. Rotation method:  varimax 
     >                  Factor1   Factor2    Factor3    Factor4    Factor5    Factor6   Factor7    Factor8
     > SS loadings    5.2610066 4.2444729 2.44138763 1.72384330 1.47256995 1.37280645 1.1732074 1.16464260
@@ -540,7 +594,9 @@ for (rm in rot_meth) {
     > SS loadings    5.0095282 3.6837302 3.6162284 1.71414002 1.48279727 1.45624130 1.44788215 0.91655944
     > Proportion Var 0.1615977 0.1188300 0.1166525 0.05529484 0.04783217 0.04697553 0.04670588 0.02956643
     > Cumulative Var 0.1615977 0.2804277 0.3970802 0.45237506 0.50020723 0.54718276 0.59388863 0.62345507
-
+```
+</details>
+    
 0.6234551 % is the maximum amount of cumulative variance with 8 factors.
 Approximately 10 % less than what the PCA yielded. Therefore PCA will be
 used.
