@@ -875,7 +875,7 @@ ggdendrogram(hclust_a, leaf_labels = F, labels = F) +
 
 <p align = "center">
   <picture>
-    <img src="img/dendro_man_ward.svg">
+    <img src="img/dendro_can_ward.svg">
   </picture>
 </p>
      
