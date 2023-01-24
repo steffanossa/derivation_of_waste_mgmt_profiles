@@ -690,6 +690,9 @@ ggdendrogram(hclust_a, leaf_labels = F, labels = F) +
 </p>
      
 A number of 2 to 6 clusters seem to be most viable.
+
+### Profiling
+
 Microsoft Excel can be used to comfortably compare clusters for profiling and help determining the number of clusters to choose.
 
 ```r
@@ -816,5 +819,10 @@ End Sub
     <img src="img/profiling_hclust_a.png">
   </picture>
 </p>
+
+Now we can see that cluster #1 consists of municipalities with a large area and a high population and therefore due to their correlation high amounts of waste, while their urbanisation degree is the lowest among all clusters. Approximately third of these communities are coastal communities and there is no tendency of their location being rather north or south. This is true for using any number between 3 and 7 for clustering.
+
+The second cluster contains the smallest communities (by average), the population per area, however, is very high; being only surpassed by cluster #1. These municipalities are located in the north of Italy and their urbanisation degree is rather high, as is their degree of sorting, the percentage of waste that is for recycling and to produce energy and the per capita tax revenue from private sources. The rate of municipalities that offer PAYT is the lowest among all clusters while the rate of standard fee regulation sits at 97 %. Also, this cluster contains the least amount of coastal communities, and everything cost related is below average.
+
 
 **...**
