@@ -4,7 +4,7 @@
 - [ ] references: ~bartlett test~, ~kmo~, pca, fa
 - [ ] clustering: diana, mona, agnes, k-means
 - [ ] profiling
-- [ ] output code
+- [ ] recommendations
 
 ## Context
 Although only about 15% of all waste within the EU is generated as municipal waste[^bignote], the absolute figures pose a major problem for municipalities, waste management companies and the environment. 225.7 million tonnes of municipal waste were collected in the EU in 2020, of which only 68 million tonnes were directly recycled, with the remainder going into long-term landfill or being incinerated for energy generation. In view of the climate-damaging landfill gases produced during storage or CO2 emissions during incineration, combined with the problem of the large amount of space required, the EU's goal is to constantly optimise its waste management. This is intended to promote the production of less waste, a stronger circular economy and the economic efficiency of waste management.
@@ -651,8 +651,7 @@ NULL
 
 ### Hierarchical Clustering: Agglomerative Methods
 
-Clustering can be done with different approaches.
-Agglomerative methods start with a cluster containing a single observation, adding more and more observations successively.
+*Hierarchical Clustering* can be done with different approaches. *Agglomerative methods* start with every observation being considered a single-elementcluster. Then the two most similar clusters are combined into a new cluster. This is done until there is one cluster containing everything.
 First, a distance matrix and then clusters are created. For both steps there are multiple methods of creation.
 
 ```r
@@ -691,9 +690,27 @@ ggdendrogram(hclust_a, leaf_labels = F, labels = F) +
      
 A number of 2 to 6 clusters seem to be most viable.
 
+### Hierarchical Clustering: Divisive Methods
+Unlike with the agglomerative approach, the divisive method begins with a single cluster containing every observation and with each step existing clusters are divided into smaller ones until therea are as many clusters as observations.  
+     
+```r
+diana <- diana(wm_df_transformed_pca, metric = "euclidean", stand = TRUE)
+diana %>% pltree()
+```
+
+**...**
+     
+### Clustering: Partitioning Methods
+
+**...**
+     
 ### Profiling
 
-Microsoft Excel can be used to comfortably compare clusters for profiling and help determining the number of clusters to choose.
+*Microsoft Excel* can be used to comfortably compare clusters for profiling and help determining the number of clusters to choose.
+
+<details>
+  <summary>(<i>click to show/hide code</i>)</summary>
+  <!-- have to be followed by an empty line! -->
 
 ```r
 for (i in 2:7) {
@@ -747,8 +764,9 @@ for (i in 2:7) {
   }
 }
 ```
-
-Using a .vba script, the differences of the means of the different clusters can be emphasised easily. I use this macro for highlighting.
+</details>
+ 
+Using a .vba script, the differences of the means of the different clusters can be emphasised easily. I use a macro for highlighting.
 
 <details>
   <summary>(<i>click to show/hide .vba code</i>)</summary>
@@ -820,10 +838,5 @@ End Sub
   </picture>
 </p>
 
-Now we can see that cluster #1 consists of municipalities with a large area and a high population and therefore due to their correlation high amounts of waste, while their urbanisation degree is the lowest among all clusters. Approximately third of these communities are coastal communities and there is no tendency of their location being rather north or south. This is true for using any number between 3 and 7 for clustering.
-
-The second cluster contains the smallest communities (by average), the population per area, however, is very high; being only surpassed by cluster #1. These municipalities are located in the north of Italy and their urbanisation degree is rather high, as is their degree of sorting, the percentage of waste that is for recycling and to produce energy and the per capita tax revenue from private sources. The rate of municipalities that offer PAYT is the lowest among all clusters while the rate of standard fee regulation sits at 97 %. Also, this cluster contains the least amount of coastal communities, and everything cost related is below average.
-
-Cluster #3 includes municipalities that are big by area but small by population. The percentage of sorted waste is the lowest among all clusters, as is the percentage of waste used for energy production and. The percentage of waste with unknown use, too is very low
 
 **...**
