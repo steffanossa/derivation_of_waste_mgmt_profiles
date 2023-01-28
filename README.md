@@ -661,14 +661,47 @@ dist_meth <- c("euclidean",
                "canberra",
                "minkowski")
 
-clust_meth <- c("single",
-                "complete",
-                "average",
-                "cquitty",
-                "median",
-                "centroid",
-                "ward.D2")
-#' *...*
+daisy_meth <- c("euclidean",
+                "manhattan",
+                "gower")
+
+hclust_meth <- c("single",
+                 "complete",
+                 "average",
+                 "mcquitty",
+                 "median",
+                 "centroid",
+                 "ward")
+
+pdf("figs/dendro_dist_hclust.pdf", width = 16, height = 9)
+for (dm in dist_meth) {
+  for (cm in hclust_meth) {
+    hdist <- dist(scale(wm_df_transformed_pca),
+                  dm)
+    hcl <- flashClust::flashClust(hdist, cm)
+    plot(hcl,
+         main = paste0("dist method: ", dm,
+                       "\nclust method: ", cm),
+         sub = NA,
+         labels = FALSE)
+  }
+}
+dev.off()
+
+pdf("figs/dendro_daisy.pdf", width = 16, height = 9)
+for (dm in daisy_meth) {
+  for (cm in hclust_meth) {
+    daisydist <- daisy(wm_df_transformed_pca,
+                       metric = dm,
+                       stand = TRUE)
+    flashClust::flashClust(daisydist, cm) %>% 
+      plot(main = paste0("dist method: ", dm,
+                         "\nclust method: ", cm),
+           sub = NA,
+           labels = FALSE)
+  }
+}
+dev.off()
 ```
 
 The combination of *canberra* and *ward.D2* looks most promising.
@@ -677,9 +710,12 @@ The combination of *canberra* and *ward.D2* looks most promising.
 hclust_a <- 
   dist(scale(wm_df_transformed_pca), 
        method = "canberra") %>% 
-  hclust(method = "ward.D2")
-ggdendrogram(hclust_a, leaf_labels = F, labels = F) +
-  labs(title = paste0("Distance: Canberra", "\nCluster: ward.D2"))
+  flashClust::flashClust(method = "ward")
+ 
+hclust_a %>% plot(main = paste0("dist method: canberra",
+                                "\nclust method: ward"),
+                  sub = NA,
+                  labels = FALSE)
 ```
 
 <p align = "center">
@@ -694,8 +730,8 @@ A number of 2 to 6 clusters seem to be most viable.
 Unlike with the agglomerative approach, the divisive method begins with a single cluster containing every observation and with each step existing clusters are divided into smaller ones until therea are as many clusters as observations.  
      
 ```r
-diana <- diana(wm_df_transformed_pca, metric = "euclidean", stand = TRUE)
-diana %>% pltree()
+#diana <- diana(wm_df_transformed_pca, metric = "euclidean", stand = TRUE)
+#diana %>% pltree()
 ```
 
 **...**
