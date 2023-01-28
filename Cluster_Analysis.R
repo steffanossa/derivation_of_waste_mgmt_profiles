@@ -22,42 +22,60 @@ wm_df_transformed_pca %>%  fviz_nbclust(hcut, method = wss)
 #' Starting with a single observation, successively adding more.
 #' There is are numbers of different methods for both, creating a distance matrix
 #' and creating the clusters.
-dist_meth <- c("euclidean", "maximum", "manhattan", "canberra", "minkowski")
-clust_meth <- c("single", "complete", "average", "mcquitty", "median", "centroid", "ward.D2")
-#' Plots into .pdf
-pdf("hclust_dendro_combinations.pdf", onefile = TRUE)
-#' For loop iterating over each dist_meth
+dist_meth <- c("euclidean",
+               "maximum",
+               "manhattan",
+               "canberra",
+               "minkowski")
+
+daisy_meth <- c("euclidean",
+                "manhattan",
+                "gower")
+
+hclust_meth <- c("single",
+                 "complete",
+                 "average",
+                 "mcquitty",
+                 "median",
+                 "centroid",
+                 "ward")
+
+pdf("figs/dendro_dist_hclust.pdf", width = 16, height = 9)
 for (dm in dist_meth) {
-  #' For-loop iterating over each clust_meth
-  for (cm in clust_meth) {
-    hclustt <- 
-      dist(wm_df_transformed_pca, method = dm) %>% 
-      hclust(method = cm)
-    ggdendrogram(hclustt, leaf_labels = F, labels = F) +
-      labs(title = paste0("Distance: ", dm, "\nCluster: ", cm))
-    #dendro_plot_list <- apply(dendro_plot_list, p)
+  for (cm in hclust_meth) {
+    hdist <- dist(scale(wm_df_transformed_pca),
+                  dm)
+    hcl <- flashClust::flashClust(hdist, cm)
+    plot(hcl,
+         main = paste0("dist method: ", dm,
+                       "\nclust method: ", cm),
+         sub = NA,
+         labels = FALSE)
   }
 }
 dev.off()
-#' *DOES NOT WORK, IDK WHY*
 
-#' Manhattan + ward.D2 looks best.
-hclustt <- 
+pdf("figs/dendro_daisy.pdf", width = 16, height = 9)
+for (dm in daisy_meth) {
+  for (cm in hclust_meth) {
+    daisydist <- daisy(wm_df_transformed_pca,
+                       metric = dm,
+                       stand = TRUE)
+    flashClust::flashClust(daisydist, cm) %>% 
+      plot(main = paste0("dist method: ", dm,
+                         "\nclust method: ", cm),
+           sub = NA,
+           labels = FALSE)
+  }
+}
+dev.off()
+#' Canberra + ward.D2 looks best.
+hclust_a <- 
   dist(scale(wm_df_transformed_pca), 
        method = "canberra") %>% 
   hclust(method = "ward.D2")
 ggdendrogram(hclustt, leaf_labels = F, labels = F) +
-  labs(title = paste0("Distance: ", "\nCluster: "))
-
-hclust_a <- dist(scale(wm_df_transformed_pca,
-                       center = TRUE,
-                       scale = TRUE),
-                 method = "manhattan") %>% 
-  hclust(method = "ward.D2")
-clust_a <- cutree(hclust_a, k = 4)
-
-#' Bind cluster id to data set
-wm_df_prepped_clust_a <- wm_df_prepped %>% mutate(Cluster_a = clust_a)
+  labs(title = paste0("Distance: canberra", "\nCluster: ward.D2"))
 
 #### Profiling using Microsoft Excel ###########################################
 for (i in 2:6) {
@@ -87,10 +105,10 @@ write.csv2(profiling_df_final, file = "profiling_clust_a.csv")
 #' Starting with a single cluster containing all observations, splitting up more
 #' and more.
 #### Diana (DIvisive, ANAlysis Clustering) #####################################
-##### Daisy (Dissimilarity Matrix Calculation) #################################
-dist_meth_daisy <- c("euclidean", "manhattan", "gower")
-clust_meth_agnes <- c("single", "complete", "weighted", "ward", "flexible")
-##### Agnes (AGlomerative NESting) #############################################
+
+**...**
+
+
 #### Mona (MONothetic Analysis) ################################################
 ## Partiotional Clustering =====================================================
 ### K-Means ####################################################################
