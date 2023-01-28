@@ -1,8 +1,8 @@
 # Derivation of Waste Management Profiles (*WIP*)
 
 ## Todos:
-- [ ] references: ~bartlett test~, ~kmo~, pca, fa
-- [ ] clustering: diana, mona, agnes, k-means
+- [ ] references: ~bartlett test~, ~kmo~, pca, fa, ~hopkins~
+- [ ] clustering: diana, mona, agnes, k-means, ~daisy~
 - [ ] profiling
 - [ ] recommendations
 
