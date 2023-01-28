@@ -152,4 +152,4 @@ for (i in 2:5) {
 
 write.csv2(profiling_df_kmeans_final, file = "profiling_kmeans.csv")
 
-#' Decided to go with hclust after inspection in Excel
+#' Decided to go with dist + hclust cannerra&ward.D2 after inspection in Excel
