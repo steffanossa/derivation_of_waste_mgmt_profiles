@@ -1037,6 +1037,7 @@ In order to visualise the geographical distribution of the clusters, the latitud
   <summary>(<i>click to show/hide code</i>)</summary>
   <!-- have to be followed by an empty line! -->
 
+**This takes quite some time**
 ```r
 library(stringi)
 library(httr)
