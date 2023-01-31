@@ -1037,23 +1037,35 @@ In order to visualise the geographical distribution of the clusters, the latitud
   <summary>(<i>click to show/hide code</i>)</summary>
   <!-- have to be followed by an empty line! -->
 
-**This takes quite some time**
+**This took quite some time**
 ```r
 library(stringi)
-library(httr)
+library(jsonlite)
+library(curl)
 wm_df$Latitude <- NA
 wm_df$Longitude <- NA
-for (i in 1:nrow(wm_df)) {
-  municipality <- wm_df_try[i,4]
-  municipality <- stringi::stri_replace_all_fixed(municipality,
-                                                  pattern = c(" ", "'"),
-                                                  replacement = c("%20", "%27"),
-                                                  vectorise_all = F)
-  address <- paste0("https://api.api-ninjas.com/v1/geocoding?city=", municipality, "&country=italy")
-  response <- GET(address, accept_json(), add_headers("X-Api-Key" = MY_API_KEY))
-  if (content(response) %>% length() == 1){
-    wm_df$Latitude[i] <- content(response)[[1]][2]
-    wm_df$Longitude[i] <- content(response)[[1]][3]
+while(end < nrow(wm_df)) {
+  for (i in end:nrow(wm_df)) {
+    print(i)
+    municipality <- wm_df[i,4]
+    municipality <- stringi::stri_replace_all_fixed(municipality,
+                                                    pattern = c(" ", "'"),
+                                                    replacement = c("%20", "%27"),
+                                                    vectorise_all = F)
+    address <- paste0("https://api.api-ninjas.com/v1/geocoding?city=", municipality, "&country=italy")
+    response <- curl_fetch_memory(http_string, handle = MY_HANDLE)
+    cont <- prettify(rawToChar(response$content))
+    tryCatch(
+      {
+        if (fromJSON(cont) %>% nrow == 1){
+          wm_df$Latitude[i] <- fromJSON(cont)[1,2]
+          wm_df$Longitude[i] <- fromJSON(cont)[1,3]}
+        end <- end + 1
+      },
+      error = function(e){
+        end <- end - 1
+      }
+    )
   }
 }
 ```
