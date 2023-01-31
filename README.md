@@ -1022,7 +1022,7 @@ End Sub
   </picture>
 </p>
 
-Unsurprisingly both approaches lead to the equal results.
+Unsurprisingly both approaches lead to equal results.
 From here, it is possible to point out the differences between clusters.
 I went with 4 clusters.
 
