@@ -1032,7 +1032,8 @@ I went with 4 clusters.
 - Cluster #4: the highest rate of waste sorting, the highest rate of waste that is used for recycling and the highest per capita tax revenue from pirate sources. The amount of municipalities that offer PAYT is very low as is the amount of waste stored in landfills. Most communities are located in the north nd their urbanisation degree is high.
 
 In order to visualise the geographical distribution of the clusters, the latitudes and longitudes are necessary. A dump of Italian municipalities and their geographical positions is used[^6]. Using a *left join*, latitudes and longitudes of the relevant communities are extracted.
-*(Note: municipality names are not unique and the database contains duplicates.)*
+
+*(Note: municipality names are not unique and the database contains duplicates. Some errors are produced.)*
 
   
 [^6]: Source: http://www.geonames.org/export/
