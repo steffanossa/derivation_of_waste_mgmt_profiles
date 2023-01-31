@@ -1033,7 +1033,7 @@ I went with 4 clusters.
 
 In order to visualise the geographical distribution of the clusters, the latitudes and longitudes are necessary. A dump of Italian municipalities and their geographical positions is used[^6]. Using a *left join*, latitudes and longitudes of the relevant communities are extracted.
 
-*(Note: municipality names are not unique and the database contains duplicates. Some errors are produced.)*
+*(Note: Municipality names are not unique and the database contains duplicates. Some errors are produced.)*
 
   
 [^6]: Source: http://www.geonames.org/export/
