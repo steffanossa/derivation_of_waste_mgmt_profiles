@@ -1044,10 +1044,10 @@ wm_df$Latitude <- NA
 wm_df$Longitude <- NA
 for (i in 1:nrow(wm_df)) {
   municipality <- wm_df_try[i,4]
-  municipality %>% stringi::stri_replace_all_fixed(.,
-                                                   pattern = c(" ", "'"),
-                                                   replacement = c("%20", "27"),
-                                                   vectorise_all = F)
+  municipality <- stringi::stri_replace_all_fixed(municipality,
+                                                  pattern = c(" ", "'"),
+                                                  replacement = c("%20", "%27"),
+                                                  vectorise_all = F)
   address <- paste0("https://api.api-ninjas.com/v1/geocoding?city=", municipality, "&country=italy")
   response <- GET(address, accept_json(), add_headers("X-Api-Key" = MY_API_KEY))
   if (content(response) %>% length() == 1){
