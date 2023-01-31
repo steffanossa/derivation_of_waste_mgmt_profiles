@@ -652,7 +652,7 @@ NULL
 ### Hierarchical Clustering: Agglomerative Methods
 
 *Hierarchical Clustering* can be done with different approaches. *Agglomerative methods* start with every observation being considered a single-elementcluster. Then the two most similar clusters are combined into a new cluster. This is done until there is one cluster containing everything.
-First, a distance matrix and then clusters are created. For both steps there are multiple methods of creation.
+First, a distance matrix and then clusters are created. For both steps there are multiple methods of creation. Every combination is looped over and the results are saved into *.pdf* files which can be found in *doc/*.
 
 ```r
 dist_meth <- c("euclidean",
@@ -673,7 +673,7 @@ hclust_meth <- c("single",
                  "centroid",
                  "ward")
 
-pdf("figs/dendro_dist_hclust.pdf", width = 16, height = 9)
+pdf("doc/dendro_dist_hclust.pdf", width = 16, height = 9)
 for (dm in dist_meth) {
   for (cm in hclust_meth) {
     hdist <- dist(scale(wm_df_transformed_pca),
@@ -688,7 +688,7 @@ for (dm in dist_meth) {
 }
 dev.off()
 
-pdf("figs/dendro_daisy.pdf", width = 16, height = 9)
+pdf("doc/dendro_daisy.pdf", width = 16, height = 9)
 for (dm in daisy_meth) {
   for (cm in hclust_meth) {
     daisydist <- daisy(wm_df_transformed_pca,
