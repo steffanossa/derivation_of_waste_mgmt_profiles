@@ -4,6 +4,9 @@ psych
 FactoMineR
 crayon
 factoextra
+ggcorrplot
+cluster
+flashClust
 tidyclust
 GPArotation
 ggplot2
