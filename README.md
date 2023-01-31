@@ -990,12 +990,15 @@ End Sub
 </details>
 
 *Agglomerative*
+
 <p align = "center">
   <picture>
     <img src="img/profiling_hclust_a.png">
   </picture>
 </p>
+  
 *k-means*
+
 <p align = "center">
   <picture>
     <img src="img/profiling_kmeans.png">
