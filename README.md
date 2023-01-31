@@ -1,5 +1,8 @@
 # Derivation of Waste Management Profiles (*WIP*)
 
+## Disclaimer
+Most recent code can be found below. The *.R* files might be outdated.
+
 ## Todos:
 - [ ] references: ~bartlett test~, ~kmo~, pca, fa, ~hopkins~
 - [x] clustering: ~diana~, ~k-means~, ~daisy~
