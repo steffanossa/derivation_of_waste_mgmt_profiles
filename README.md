@@ -2,7 +2,7 @@
 
 ## Todos:
 - [ ] references: ~bartlett test~, ~kmo~, pca, fa, ~hopkins~
-- [ ] clustering: ~diana~, ~k-means~, ~daisy~
+- [x] clustering: ~diana~, ~k-means~, ~daisy~
 - [ ] profiling
 - [ ] recommendations
 
