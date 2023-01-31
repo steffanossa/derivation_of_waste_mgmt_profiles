@@ -1030,3 +1030,31 @@ I went with 4 clusters.
 - Cluster #2: contains the smallest communities (by average), the population per area, however, is very high; being only surpassed by cluster #1. These municipalities are located in the north of Italy and their urbanisation degree is rather high, as is their degree of sorting, the percentage of waste that is for recycling and to produce energy and the per capita tax revenue from private sources. The rate of municipalities that offer PAYT is the lowest among all clusters while the rate of standard fee regulation sits at 97 %. Also, this cluster contains the least amount of coastal communities, and everything cost related is below average.
 - Cluster #3: includes municipalities that are big by area but small by population. The percentage of sorted waste is the lowest among all clusters, as is the percentage of waste used for energy production and. The percentage of waste with unknown use, too is very low
 - Cluster #4: the highest rate of waste sorting, the highest rate of waste that is used for recycling and the highest per capita tax revenue from pirate sources. The amount of municipalities that offer PAYT is very low as is the amount of waste stored in landfills. Most communities are located in the north nd their urbanisation degree is high.
+
+In order to visualise the geographical distribution of the clusters, the latitudes and longitudes are necessary. There surely are better approaches. However, mine does not cost anything and can be automated.
+
+<details>
+  <summary>(<i>click to show/hide code</i>)</summary>
+  <!-- have to be followed by an empty line! -->
+
+```r
+library(stringi)
+library(httr)
+wm_df$Latitude <- NA
+wm_df$Longitude <- NA
+for (i in 1:nrow(wm_df)) {
+  municipality <- wm_df_try[i,4]
+  municipality %>% stringi::stri_replace_all_fixed(.,
+                                                   pattern = c(" ", "'"),
+                                                   replacement = c("%20", "27"),
+                                                   vectorise_all = F)
+  address <- paste0("https://api.api-ninjas.com/v1/geocoding?city=", municipality, "&country=italy")
+  response <- GET(address, accept_json(), add_headers("X-Api-Key" = MY_API_KEY))
+  if (content(response) %>% length() == 1){
+    wm_df$Latitude[i] <- content(response)[[1]][2]
+    wm_df$Longitude[i] <- content(response)[[1]][3]
+  }
+}
+```
+</details>
+  
