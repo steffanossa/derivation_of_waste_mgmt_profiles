@@ -226,6 +226,23 @@ wm_df %>% na.omit %>%
   </picture>
 </p>
 
+Taking a look at correlations
+
+```r
+wm_df %>% 
+  select_if(is.numeric) %>% 
+  na.omit %>% 
+  cor(use = "pairwise.complete.obs") %>% 
+  ggcorrplot::ggcorrplot(lab = F,
+                         colors = c("red", "white", "blue"),
+                         tl.cex = 10)
+```
+<p align = "center">
+  <picture>
+    <img src="img/corrplot.svg">
+  </picture>
+</p>
+
 
 Inspecting missing values within the waste sorting related columns:
 
