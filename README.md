@@ -436,7 +436,7 @@ Dim.4 	1.824394      	 5.885141	                   53.33472
 Dim.5	  1.586462	       5.117619	                   58.45234
 Dim.6	  1.339441	       4.320776	                   62.77311
 Dim.7	  1.076469	       3.472482            	       66.24560
-Dim.8	  1.043998	       3.367737              	     69.61333
+Dim.8	  1.043998	       3.367737                    69.61333
 ```
 </details>
 
@@ -989,11 +989,13 @@ End Sub
 ```
 </details>
 
+*Agglomerative*
 <p align = "center">
   <picture>
     <img src="img/profiling_hclust_a.png">
   </picture>
 </p>
+*k-means*
 <p align = "center">
   <picture>
     <img src="img/profiling_kmeans.png">
