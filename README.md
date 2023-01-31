@@ -1031,43 +1031,39 @@ I went with 4 clusters.
 - Cluster #3: includes municipalities that are big by area but small by population. The percentage of sorted waste is the lowest among all clusters, as is the percentage of waste used for energy production and. The percentage of waste with unknown use, too is very low
 - Cluster #4: the highest rate of waste sorting, the highest rate of waste that is used for recycling and the highest per capita tax revenue from pirate sources. The amount of municipalities that offer PAYT is very low as is the amount of waste stored in landfills. Most communities are located in the north nd their urbanisation degree is high.
 
-In order to visualise the geographical distribution of the clusters, the latitudes and longitudes are necessary. There surely are better approaches. However, mine does not cost anything and can be automated.
+In order to visualise the geographical distribution of the clusters, the latitudes and longitudes are necessary. A dump of Italian municipalities and their geographical positions is used[^6]. Using a *left join*, latitudes and longitudes of the relevant communities are extracted.
+*(Note: municipality names are not unique and the database contains duplicates.)*
 
+  
+[^6]: Source: http://www.geonames.org/export/
+  
 <details>
   <summary>(<i>click to show/hide code</i>)</summary>
   <!-- have to be followed by an empty line! -->
 
-**This took quite some time**
+
 ```r
-library(stringi)
-library(jsonlite)
 library(curl)
-wm_df$Latitude <- NA
-wm_df$Longitude <- NA
-while(end < nrow(wm_df)) {
-  for (i in end:nrow(wm_df)) {
-    print(i)
-    municipality <- wm_df[i,4]
-    municipality <- stringi::stri_replace_all_fixed(municipality,
-                                                    pattern = c(" ", "'"),
-                                                    replacement = c("%20", "%27"),
-                                                    vectorise_all = F)
-    address <- paste0("https://api.api-ninjas.com/v1/geocoding?city=", municipality, "&country=italy")
-    response <- curl_fetch_memory(http_string, handle = MY_HANDLE)
-    cont <- prettify(rawToChar(response$content))
-    tryCatch(
-      {
-        if (fromJSON(cont) %>% nrow == 1){
-          wm_df$Latitude[i] <- fromJSON(cont)[1,2]
-          wm_df$Longitude[i] <- fromJSON(cont)[1,3]}
-        end <- end + 1
-      },
-      error = function(e){
-        end <- end - 1
-      }
-    )
-  }
-}
+zip_path <- "https://download.geonames.org/export/dump/IT.zip"
+tmp <- tempfile()
+curl_download(zip_path, tmp)
+unzip(tmp, "IT.txt")
+
+italy_df <- read.table("IT.txt", sep = "\t", header = F, fill = T, quote = '\"')
+italy_df <- italy_df %>% select(Name = V2, Lat = V5, Long = V6)
+
+export <- wm_df_kmeans %>% left_join(italy_df, by = c("Gemeinde" = "Name"))
+export[!duplicated(export$Gemeinde),] %>%
+  write.csv("export.csv")
 ```
 </details>
+  
+The exported *.csv* can then be used to mark the municipalities on a map. Here, *Google Maps* was used.
+
+<p align = "center">
+  <picture>
+    <img src="img/map.png">
+  </picture>
+</p>
+
   
