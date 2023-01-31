@@ -724,25 +724,8 @@ hclust_a %>% plot(main = paste0("dist method: canberra",
   </picture>
 </p>
      
-A number of 2 to 6 clusters seem to be most viable.
-
-### Hierarchical Clustering: Divisive Methods
-Unlike with the agglomerative approach, the divisive method begins with a single cluster containing every observation and with each step existing clusters are divided into smaller ones until therea are as many clusters as observations.  
-     
-```r
-#diana <- diana(wm_df_transformed_pca, metric = "euclidean", stand = TRUE)
-#diana %>% pltree()
-```
-
-**...**
-     
-### Clustering: Partitioning Methods
-
-**...**
-     
-### Profiling
-
-*Microsoft Excel* can be used to comfortably compare clusters for profiling and help determining the number of clusters to choose.
+A number of 2 to 7 clusters seem to be most viable. The results of clustering into 2 to 7 clusters will be saved as *.csv* file and later be used for profiling.
+The results can be found in *doc/profiling_hclust_a.csv*
 
 <details>
   <summary>(<i>click to show/hide code</i>)</summary>
@@ -801,8 +784,146 @@ for (i in 2:7) {
 }
 ```
 </details>
- 
-Using a .vba script, the differences of the means of the different clusters can be emphasised easily. I use a macro for highlighting.
+
+### Hierarchical Clustering: Divisive Methods
+Unlike with the agglomerative approach, the divisive method begins with a single cluster containing every observation and with each step existing clusters are divided into smaller ones until there are as many clusters as observations. 
+*Diana* (DIvisive ANAlysis) comes with two methods of calculating the dissimilarities between observations.
+
+```r
+diana_eucl <- diana(wm_df_transformed_pca,
+                    metric = "euclidean",
+                    stand = TRUE)
+diana_man <- diana(wm_df_transformed_pca,
+                   metric = "manhatten",
+                   stand = TRUE)
+diana_eucl %>% 
+  pltree(main = "Diana\nEuclidean",
+         labels = FALSE,
+         sub = NA,
+         xlab = NA)
+
+diana_man %>% 
+  pltree(main = "Diana\nEuclidean",
+         labels = FALSE,
+         sub = NA,
+         xlab = NA)
+```
+
+**...**
+     
+### Clustering: Partitioning Methods
+*k-means* needs a fixed amount of clusters to operate. we can get suggestions by using different approaches of calculating the resulting quality.
+The target is to produce clusters that are homogenous within themselves while being as differentiable as possible from other clusters.
+*WithinSS* (sum of squares within a cluster):
+
+```r
+fviz_nbclust(wm_df_transformed_pca, kmeans, method = "wss")
+```
+
+<p align = "center">
+  <picture>
+    <img src="img/kmeans_n_clusters_wss.svg">
+  </picture>
+</p>
+
+*Silhouette*
+
+```r
+fviz_nbclust(wm_df_transformed_pca, kmeans, method = "silhouette")
+```
+
+<p align = "center">
+  <picture>
+    <img src="img/kmeans_n_clusters_silhouette.svg">
+  </picture>
+</p>
+
+*Gap statistic*
+
+```r
+fviz_nbclust(wm_df_transformed_pca, kmeans, method = "gap_stat")
+```
+
+<p align = "center">
+  <picture>
+    <img src="img/kmeans_n_clusters_gap.svg">
+  </picture>
+</p>
+
+These plot suggest 3, 4 or 7. Not too helpful, in my opinion, since we can just loop over a range that is similar to the range we used with *Agglomerative Clustering* anyway without any hassle. The results can be found in in *doc/profiling_kmeans.csv*.
+
+<details>
+  <summary>(<i>click to show/hide code</i>)</summary>
+  <!-- have to be followed by an empty line! -->
+
+```r
+set.seed(187)
+for (i in 2:7) {
+  kmeans_t <- kmeans(scale(wm_df_transformed_pca),
+                   centers = i,
+                   nstart = 10,
+                   iter.max = 10
+                   )
+  
+  wm_df_prepped_clust_kmeans <-
+    wm_df_prepped %>% 
+    mutate(Cluster_k = kmeans_t$cluster)
+  
+  profiling_df_kmeans <-
+    wm_df_prepped_clust_kmeans %>% 
+    group_by(Cluster_k) %>% 
+    mutate(n_island_municipalities = sum(Inselgemeinde),
+           Inselgemeinde = NULL,
+           n_coastal_municipalities = sum(Kuestengemeinde),
+           Kuestengemeinde = NULL) %>% 
+    summarise_all(mean)
+  
+  profiling_df_kmeans$n_Cluster <- i
+  profiling_df_kmeans$Size <- table(wm_df_prepped_clust_kmeans$Cluster_k)
+  
+  if (i == 2) {
+    profiling_df_kmeans_final <- profiling_df_kmeans
+    # write to csv
+    write.table(profiling_df_final %>%
+                  filter(n_Cluster == i) %>% 
+                  mutate(round(., 2)),
+                file = "profiling_kmeans.csv",
+                sep = ";",
+                dec = ",",
+                row.names = F)
+  } else {
+    profiling_df_kmeans_final <-
+      profiling_df_kmeans_final %>% 
+      rows_append(profiling_df_kmeans)
+    # write to csv
+    ## blank line
+    write.table("",
+                file = "profiling_kmeans.csv",
+                sep = ";",
+                append = T,
+                col.names = F,
+                dec = ",",
+                row.names = F)
+    ## data
+    write.table(profiling_df_final %>%
+                  filter(n_Cluster == i) %>% 
+                  mutate(round(., 2)),
+                file = "profiling_kmeans.csv",
+                sep = ";",
+                append = T,
+                col.names = F,
+                dec = ",",
+                row.names = F)
+  }
+}
+```
+</details>
+
+### Profiling
+
+Now the *.csv* files created earlier come into play.
+*Microsoft Excel* can be used to comfortably compare clusters for profiling and help determining the number of clusters to choose.
+Using a *.vba* script, the differences between the clusters can be emphasised easily.
 
 <details>
   <summary>(<i>click to show/hide .vba code</i>)</summary>
@@ -873,6 +994,10 @@ End Sub
     <img src="img/profiling_hclust_a.png">
   </picture>
 </p>
-
+<p align = "center">
+  <picture>
+    <img src="img/profiling_kmeans.png">
+  </picture>
+</p>
 
 **...**
