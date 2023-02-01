@@ -1067,6 +1067,6 @@ The exported *.csv* can then be used to mark the municipalities on a map. Here, 
 <p align = "center">
   <picture>
     <a href="https://www.google.com/maps/d/edit?mid=1Rmm5rXkIQdALBYGkuSYzAOsAT7eOhEw&usp=sharing" target="_blank">
-    <img src="img/map.png" title="Click to open on google.com/maps/">
+    <img src="img/map.png" title="Click to open on google.com/maps/; CTRL + Click for new tab">
   </picture>
 </p>
