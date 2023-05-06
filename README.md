@@ -1063,7 +1063,7 @@ export[!duplicated(export$Gemeinde),] %>%
 </details>
   
 The exported *.csv* can then be used to mark the municipalities on a map. Here, *Google Maps* was used.
-
+Note: Due to github Markdown limitations, a click on the map will open a link within this tab. Use CTRL + Click to open in a new tab instead.
 <p align = "center">
   <picture>
     <a href="https://www.google.com/maps/d/edit?mid=1Rmm5rXkIQdALBYGkuSYzAOsAT7eOhEw&usp=sharing" target="_blank">
