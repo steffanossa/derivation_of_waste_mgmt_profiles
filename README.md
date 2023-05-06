@@ -6,7 +6,7 @@ Most recent code can be found below. *.R* files might be outdated.
 ## Todos:
 - [ ] references: ~bartlett test~, ~kmo~, pca, fa, ~hopkins~
 - [x] clustering: ~diana~, ~k-means~, ~daisy~
-- [ ] profiling
+- [x] profiling
 - [ ] recommendations
 
 ## Context
